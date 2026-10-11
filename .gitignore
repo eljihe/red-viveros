@@ -1,0 +1,19 @@
+# Configuración con contraseñas
+config/config.php
+.env
+
+# Fotos subidas por los usuarios
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Configuración local de Claude Code
+.claude/settings.local.json

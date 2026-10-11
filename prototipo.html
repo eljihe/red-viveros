@@ -1,0 +1,545 @@
+<title>Red de Viveros Tabasco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app bar + 3 tabs (mapa, mercado, mi cuenta); mercado = filter bar + card grid -> product page; cuenta = role picker -> vivero/comprador forms */
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F2F6EE; --fg:#17240F; --muted:#5E6B57; --line:#E1E7DB;
+  --leaf:#1E6B0F; --leaf-ink:#FFFFFF; --cacao:#1E6B0F; --mazorca:#F2B705; --water:#DCEBF2; --land:#EEF4E8;
+  --head:#123A08; --head-2:#1E6B0F; --head-ink:#FFFFFF; --shadow:0 1px 2px rgba(18,58,8,.06),0 6px 18px rgba(18,58,8,.08);
+  --ok:#1E7A12; --warn:#B26A00; --err:#B33A2B; --wa:#1F8F4E;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F150C; --surface:#172012; --surface-2:#1F2B19; --fg:#E7EFE2; --muted:#A3B29A; --line:#2E3D27;
+  --leaf:#6CCB4F; --leaf-ink:#0B1407; --cacao:#7FD85F; --mazorca:#F5C531; --water:#14303A; --land:#1A2615;
+  --head:#0A2105; --head-2:#174F0B; --head-ink:#FFFFFF; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  --ok:#7FD85F; --warn:#F5C531; --err:#F08A7A; --wa:#2BA563; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F150C; --surface:#172012; --surface-2:#1F2B19; --fg:#E7EFE2; --muted:#A3B29A; --line:#2E3D27;
+  --leaf:#6CCB4F; --leaf-ink:#0B1407; --cacao:#7FD85F; --mazorca:#F5C531; --water:#14303A; --land:#1A2615;
+  --head:#0A2105; --head-2:#174F0B; --head-ink:#FFFFFF; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  --ok:#7FD85F; --warn:#F5C531; --err:#F08A7A; --wa:#2BA563; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.5;padding:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
+main.wrap{padding-block:24px 48px}
+.masthead{background:var(--head);color:var(--head-ink)}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-block:20px 14px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:42px;height:42px;flex:none}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.4rem,3.6vw,2rem);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance;color:var(--head-ink)}
+.brand p{margin:2px 0 0;color:#CFE3C6;font-size:.92rem}
+.who-am-i{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#CFE3C6;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mazorca);flex:none;display:inline-block}
+.dot.live{background:#7FD85F}
+.acct{display:inline-flex;align-items:center;gap:6px;background:var(--mazorca);border:none;border-radius:999px;padding:9px 18px;color:#1A1400;font:700 .95rem var(--f-body);cursor:pointer}
+.navband{background:var(--head-2)}
+nav.tabs{display:flex;gap:2px;flex-wrap:wrap}
+nav.tabs button{font:600 1rem var(--f-body);background:transparent;color:#E4F1DD;border:none;border-bottom:3px solid transparent;padding:12px 16px;cursor:pointer}
+nav.tabs button:hover{color:#fff}
+nav.tabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--mazorca)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--mazorca);outline-offset:2px}
+.notice{background:var(--surface-2);border-radius:10px;padding:10px 14px;font-size:.92rem;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+.stats{display:flex;flex-wrap:wrap;gap:8px 28px;margin-bottom:14px}
+.stat{display:flex;align-items:baseline;gap:8px}
+.stat .n{font-family:var(--f-display);font-weight:800;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.stat .l{color:var(--muted);font-size:.9rem}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:flex-end}
+.filters label.f{display:flex;flex-direction:column;font-size:.75rem;color:var(--muted);gap:3px;text-transform:uppercase;letter-spacing:.05em;min-width:0}
+select,input,textarea{font:inherit;font-size:1rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-width:0}
+textarea{resize:vertical}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:.95rem;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.mapgrid{grid-template-columns:1fr}}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto}
+.maplegend{display:flex;flex-wrap:wrap;gap:14px;padding:8px 12px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line)}
+.side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.vlist{display:flex;flex-direction:column;gap:6px;max-height:520px;overflow:auto}
+.vitem{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;color:var(--fg);font:inherit}
+.vitem[aria-pressed="true"]{border-color:var(--leaf);box-shadow:inset 4px 0 0 var(--leaf)}
+.vitem .nm{font-weight:700}
+.vitem .cm{color:var(--muted);font-size:.88rem;grid-column:1}
+.vitem .pl{grid-row:1/3;grid-column:2;align-self:center;font-family:var(--f-mono);font-size:.9rem;font-variant-numeric:tabular-nums;color:var(--cacao)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel h2,.panel h3{font-family:var(--f-display);font-weight:800;margin:0;line-height:1.15}
+.panel h2{font-size:1.35rem}.panel h3{font-size:1.25rem}
+.meta{color:var(--muted);font-size:.9rem}
+.mono{font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+table.inv{width:100%;border-collapse:collapse;font-size:.93rem}
+table.inv th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line);padding:4px 0}
+table.inv td{padding:6px 0;border-bottom:1px solid var(--line)}
+table.inv .num{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--surface-2);max-width:100%;display:block}
+.ph{width:100%;aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--land) 10px 20px);display:grid;place-items:center;color:var(--muted);font-size:.85rem;max-width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:700 .95rem var(--f-body);padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;text-decoration:none}
+.btn.pri{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
+.btn.wa{background:var(--wa);color:#fff;border-color:var(--wa)}
+.btn.danger{color:var(--err)}
+.btn.big{padding:13px 18px;font-size:1.05rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.tag.demo{background:var(--mazorca);color:#2A1A00}
+.del{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:700;color:var(--ok)}
+.del.no{color:var(--muted);font-weight:400}
+.del svg{flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;text-align:left;color:var(--fg);font:inherit;padding:0;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-2px);border-color:var(--leaf)}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+.filters.boxed{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.sechead{text-align:center;margin:4px 0 20px}
+.sechead .eyebrow{color:var(--leaf);font-weight:700;font-size:.95rem}
+.sechead h2{font-family:var(--f-display);font-weight:800;font-size:clamp(1.6rem,4vw,2.3rem);margin:2px 0 0;line-height:1.1}
+.sechead p{color:var(--muted);margin:6px auto 0;max-width:60ch}
+.card .photo,.card .ph{border-radius:0}
+.card .body{padding:12px;display:flex;flex-direction:column;gap:5px;flex:1;width:100%}
+.card h4{margin:0;font-size:1.05rem;line-height:1.25}
+.price{font-family:var(--f-display);font-weight:800;font-size:1.2rem;color:var(--cacao)}
+.price small{font-family:var(--f-body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.card .who{color:var(--muted);font-size:.86rem}
+.pd{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.pd{grid-template-columns:1fr}}
+.pd h2{font-family:var(--f-display);font-weight:800;font-size:clamp(1.5rem,3.5vw,2rem);margin:0;line-height:1.1;text-wrap:balance}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0;font-size:.95rem}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:700}
+.gate{background:var(--surface-2);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.gate b{font-size:1rem}
+.back{background:none;border:none;color:var(--leaf);font:700 .95rem var(--f-body);cursor:pointer;padding:6px 0;margin-bottom:8px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field>span{font-weight:700;font-size:.92rem}
+.field small,.hint{color:var(--muted);font-size:.82rem}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:460px){.row2{grid-template-columns:1fr}}
+.invrows{display:flex;flex-direction:column;gap:6px}
+.invrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:center}
+.invrow input{width:100%}
+.iconbtn{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;width:38px;height:38px;cursor:pointer;font-size:1.1rem}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.92rem}
+.check input{margin-top:4px}
+.msg{font-size:.92rem;border-radius:8px;padding:8px 12px;background:var(--surface-2)}
+.msg.ok{color:var(--ok)}.msg.err{color:var(--err)}
+.preview{max-width:160px;border-radius:8px}
+.empty{color:var(--muted);padding:18px;text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+.help{font-size:.85rem;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.role{text-align:left;font:inherit;color:var(--fg);background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.role:hover{border-color:var(--leaf)}
+.role b{font-family:var(--f-display);font-weight:800;font-size:1.3rem}
+.acctgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:start}
+.myprods{display:flex;flex-direction:column;gap:8px}
+.myp{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px}
+.myp .t{width:56px;height:56px;border-radius:6px;object-fit:cover;background:var(--surface-2)}
+.deliv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.mk{cursor:pointer}
+footer{margin-top:28px;color:var(--muted);font-size:.82rem}
+</style>
+
+<div class="masthead">
+  <header class="top wrap">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 42 42" aria-hidden="true"><circle cx="21" cy="21" r="20" fill="#1E6B0F"/><path d="M21 33V17" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M21 22c-6 0-9-4-9-9 6 0 9 4 9 9z" fill="#7FD85F"/><path d="M21 19c5 0 8-3.5 8-8-5 0-8 3.5-8 8z" fill="#F2B705"/></svg>
+      <div><h1>Red de Viveros Tabasco</h1><p>Viveros comunitarios de Sembrando Vida · venta directa, sin intermediarios</p></div>
+    </div>
+    <div class="who-am-i"><span class="dot" id="dot"></span><span id="statusTxt">Conectando…</span><button class="acct" id="acctBtn" hidden></button></div>
+  </header>
+  <div class="navband"><nav class="tabs wrap" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="mapa">Mapa de viveros</button>
+    <button role="tab" aria-selected="false" data-tab="mercado">Mercado</button>
+    <button role="tab" aria-selected="false" data-tab="cuenta" id="tabCuenta">Mi cuenta</button>
+  </nav></div>
+</div>
+<main class="wrap">
+
+  <div id="demoNotice" class="notice" hidden><span class="tag demo">Ejemplo</span><span>Todavía no hay viveros registrados, así que ves <b>datos de ejemplo</b> inventados. Desaparecen en cuanto se registre el primer vivero real.</span></div>
+
+  <!-- MAPA -->
+  <section id="p-mapa" role="tabpanel">
+    <div class="stats" id="stats"></div>
+    <div class="filters">
+      <label class="f">Busco planta<select id="fEsp"></select></label>
+      <label class="f">Municipio<select id="fMun"></select></label>
+    </div>
+    <div class="mapgrid">
+      <div class="mapbox">
+        <svg id="map" viewBox="0 0 800 560" role="img" aria-label="Mapa de ubicación de viveros"></svg>
+        <div class="maplegend"><span>● Tamaño = plantas disponibles</span><span>Coordenadas en grados decimales</span><span>Costa aproximada</span></div>
+      </div>
+      <div class="side">
+        <div id="vdetail" class="panel"></div>
+        <div class="vlist" id="vlist"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MERCADO -->
+  <section id="p-mercado" role="tabpanel" hidden>
+    <div id="mkList">
+      <div class="sechead"><div class="eyebrow">Del vivero a tu casa</div><h2>Productos de nuestros viveros</h2><p>Plantas, frutas y cacao directo de los grupos de Sembrando Vida. Regístrate gratis para ver el teléfono y escribirles por WhatsApp.</p>
+        <div class="actions" style="justify-content:center;margin-top:14px"><button class="btn pri big" id="sellBtn">+ Vender un producto</button></div></div>
+      <div class="filters boxed">
+        <label class="f" style="flex:1 1 200px">Nombre del producto<input id="q" type="search" placeholder="cacao, plátano, plantas…"></label>
+        <label class="f">Categoría<select id="fCat"></select></label>
+        <label class="f">Municipio<select id="fMunP"></select></label>
+        <label class="toggle"><input type="checkbox" id="fEnt"> Con entrega a domicilio</label>
+      </div>
+      <div class="grid" id="pgrid"></div>
+    </div>
+    <div id="mkDetail" hidden></div>
+  </section>
+
+  <!-- CUENTA -->
+  <section id="p-cuenta" role="tabpanel" hidden>
+    <div id="cuenta"></div>
+  </section>
+
+  <footer>Prototipo para presentar al programa. Para ver los datos de contacto hay que registrarse como vivero o como comprador.</footer>
+</main>
+
+<script>
+(function(){
+const MUNICIPIOS=["Balancán","Cárdenas","Centla","Centro","Comalcalco","Cunduacán","Emiliano Zapata","Huimanguillo","Jalapa","Jalpa de Méndez","Jonuta","Macuspana","Nacajuca","Paraíso","Tacotalpa","Teapa","Tenosique"];
+const CATS=["Plantas","Frutas","Cacao y chocolate","Verduras","Semillas","Abono y composta","Otro"];
+const UNIDADES=["planta","kg","pieza","racimo","costal","caja","litro","docena"];
+const COAST=[[18.47,-93.75],[18.45,-93.55],[18.44,-93.42],[18.445,-93.30],[18.44,-93.20],[18.43,-93.10],[18.42,-92.98],[18.45,-92.85],[18.55,-92.70]];
+const CITY={n:"Comalcalco",lat:18.2641,lng:-93.2237};
+
+const P=(id,titulo,cat,precio,unidad,disp,desc,ent,km,costo)=>({id,titulo,cat,precio,unidad,disponible:disp,desc,entrega:{hace:ent,km,costo},creado:"2026-10-01"});
+const DEMO_V=[
+ {id:"demo1",nombre:"Vivero Los Cacaos",comunidad:"Ra. Cupilco",municipio:"Comalcalco",lat:18.2985,lng:-93.1832,integrantes:28,responsable:"Ejemplo",tel:"",inventario:[{especie:"Cacao",cantidad:4200,edad:5},{especie:"Cedro",cantidad:600,edad:7},{especie:"Plátano",cantidad:350,edad:3}],
+  productos:[P("p1","Plantas de cacao injertado","Plantas",30,"planta",800,"Injerto de 5 meses, listas para trasplante.",true,15,"Gratis en compras de 50 plantas o más"),P("p2","Plátano macho","Frutas",8,"pieza",300,"Racimos completos o por pieza.",false)]},
+ {id:"demo2",nombre:"Grupo Raíces de Tecolutilla",comunidad:"Ra. Tecolutilla",municipio:"Comalcalco",lat:18.2290,lng:-93.3180,integrantes:22,responsable:"Ejemplo",tel:"",inventario:[{especie:"Cacao",cantidad:2800,edad:4},{especie:"Chicozapote",cantidad:420,edad:8}],
+  productos:[P("p3","Cacao seco fermentado","Cacao y chocolate",120,"kg",80,"Secado al sol, cosecha de este mes.",true,30,"$50 por viaje")]},
+ {id:"demo3",nombre:"Vivero Nuevo Amanecer",comunidad:"Ra. Chichicapa",municipio:"Comalcalco",lat:18.3330,lng:-93.2560,integrantes:30,responsable:"Ejemplo",tel:"",inventario:[{especie:"Coco",cantidad:900,edad:10},{especie:"Mango",cantidad:300,edad:9},{especie:"Cacao",cantidad:1500,edad:6}],
+  productos:[P("p4","Plantas de coco enano","Plantas",45,"planta",200,"Coco enano verde, 10 meses.",true,10,"Gratis")]},
+ {id:"demo4",nombre:"Sembradores de Aldama",comunidad:"Ra. Aldama",municipio:"Comalcalco",lat:18.2120,lng:-93.2050,integrantes:20,responsable:"Ejemplo",tel:"",inventario:[{especie:"Caoba",cantidad:800,edad:9},{especie:"Pimienta",cantidad:250,edad:6}],
+  productos:[P("p5","Composta de cáscara de cacao","Abono y composta",60,"costal",40,"Costal de 25 kg.",false)]},
+ {id:"demo5",nombre:"Vivero Flor de Cacao",comunidad:"Ra. Gregorio Méndez",municipio:"Comalcalco",lat:18.3600,lng:-93.1620,integrantes:26,responsable:"Ejemplo",tel:"",inventario:[{especie:"Cacao",cantidad:3600,edad:5},{especie:"Naranja",cantidad:500,edad:7}],productos:[]},
+ {id:"demo6",nombre:"Grupo Tierra Fértil",comunidad:"Ra. Arena",municipio:"Comalcalco",lat:18.2480,lng:-93.2700,integrantes:24,responsable:"Ejemplo",tel:"",inventario:[{especie:"Guanábana",cantidad:280,edad:6},{especie:"Limón",cantidad:640,edad:5},{especie:"Cacao",cantidad:900,edad:3}],
+  productos:[P("p6","Limón persa","Frutas",25,"kg",150,"Limón recién cortado.",true,8,"$20")]}
+];
+
+const S={db:null,user:null,me:null,canWrite:null,live:false,viveros:[],perfil:null,perfilLoaded:false,selected:null,fEsp:"",fMun:"",q:"",fCat:"",fMunP:"",fEnt:false,prod:null,fotos:{},editProd:null,role:null,fotoV:undefined,fotoP:undefined};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>Number(n||0).toLocaleString("es-MX");
+const money=n=>n===""||n==null||isNaN(+n)?"":"$"+Number(n).toLocaleString("es-MX",{maximumFractionDigits:2});
+const total=v=>(v.inventario||[]).reduce((a,r)=>a+(+r.cantidad||0),0);
+const digits=t=>String(t||"").replace(/\D/g,"");
+const waLink=(tel,txt)=>{let d=digits(tel);if(d.length===10)d="52"+d;return d.length>=11?"https://wa.me/"+d+"?text="+encodeURIComponent(txt):null};
+const gmaps=v=>"https://www.google.com/maps?q="+v.lat+","+v.lng;
+const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const isDemo=()=>S.viveros.length===0;
+const viv=()=>S.viveros.length?S.viveros:DEMO_V;
+const myVivero=()=>S.me?S.viveros.find(v=>v.id===S.me)||null:null;
+const registered=()=>!!myVivero()||!!S.perfil;
+const myCoords=()=>{const v=myVivero();if(v)return v;if(S.perfil&&typeof S.perfil.lat==="number")return S.perfil;return null};
+function km(a,b){const R=6371,r=x=>x*Math.PI/180,dLa=r(b.lat-a.lat),dLo=r(b.lng-a.lng);const h=Math.sin(dLa/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const allProds=()=>viv().flatMap(v=>(v.productos||[]).map(p=>({...p,v})));
+const TRUCK='<svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true"><path d="M1 2h10v8H1zM11 5h3.5l2.5 3v2h-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="4.5" cy="11.5" r="1.6" fill="currentColor"/><circle cx="13.5" cy="11.5" r="1.6" fill="currentColor"/></svg>';
+function delivBadge(p,v){const e=p.entrega||{};if(!e.hace)return `<span class="del no">Recoger en el vivero</span>`;
+  let s=`<span class="del">${TRUCK}Entrega hasta ${fmt(e.km)} km</span>`;const me=myCoords();
+  if(me&&v&&typeof v.lat==="number"){const d=km(me,v);s+=` <span class="meta">· estás a ${d<1?"menos de 1":fmt(Math.round(d))} km${d<=e.km?", <b style=\"color:var(--ok)\">llega a tu zona</b>":""}</span>`}return s}
+
+/* Tabs */
+const tabs=[...document.querySelectorAll("nav.tabs button")];
+function showTab(t){tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["mapa","mercado","cuenta"].forEach(k=>$("p-"+k).hidden=k!==t);try{localStorage.setItem("rv_tab",t)}catch(e){}}
+tabs.forEach(b=>b.addEventListener("click",()=>{showTab(b.dataset.tab);if(b.dataset.tab==="mercado")closeProd()}));
+try{const t=localStorage.getItem("rv_tab");if(t&&$("p-"+t))showTab(t)}catch(e){}
+$("acctBtn").onclick=()=>showTab("cuenta");
+$("sellBtn").onclick=()=>{showTab("cuenta");
+  if(myVivero()){S.editProd=null;const w=$("pfWrap");if(w){renderProdForm(myVivero());w.scrollIntoView({behavior:"smooth"});const t=$("p_titulo");if(t)t.focus({preventScroll:true})}}
+  else{if(S.live&&S.me&&!S.perfil){S.role="vivero";renderAll()}
+    else if(S.perfil&&!$("sellNote")){$("cuenta").insertAdjacentHTML("afterbegin",`<div class="notice" id="sellNote">Tu cuenta es de comprador. Para vender, el responsable del vivero debe registrarse con su propia cuenta como vivero.</div>`)}
+    window.scrollTo({top:0})}};
+
+/* Photos (stored in fotos/<owner>/f/<id>, loaded on demand) */
+const pending={};
+function fotoHTML(owner,fid,alt){
+  if(!fid)return `<div class="ph">Sin foto</div>`;
+  const k=owner+"/"+fid;
+  if(S.fotos[k])return `<img class="photo" src="${esc(S.fotos[k])}" alt="${esc(alt)}">`;
+  if(S.db&&!pending[k]){pending[k]=1;S.db.doc("fotos/"+owner+"/f/"+fid).get().then(s=>{if(s.exists){S.fotos[k]=s.data().d;document.querySelectorAll('img[data-fk="'+k+'"]').forEach(i=>i.src=S.fotos[k]);renderAll()}}).catch(()=>{})}
+  return `<div class="ph">Cargando foto…</div>`;
+}
+function compress(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const M=900,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext("2d").drawImage(im,0,0,c.width,c.height);let q=.72,u=c.toDataURL("image/jpeg",q);while(u.length>200000&&q>.3){q-=.08;u=c.toDataURL("image/jpeg",q)}res(u)};im.src=fr.result};fr.readAsDataURL(file)})}
+async function saveFoto(dataUrl){const id=rid();await S.db.doc("fotos/"+S.me+"/f/"+id).set({d:dataUrl,creado:new Date().toISOString()});S.fotos[S.me+"/"+id]=dataUrl;return id}
+async function dropFoto(fid){if(!fid)return;try{await S.db.doc("fotos/"+S.me+"/f/"+fid).delete()}catch(e){}}
+
+/* ---------- MAPA ---------- */
+function matches(v){if(S.fMun&&v.municipio!==S.fMun)return false;if(S.fEsp&&!(v.inventario||[]).some(r=>r.especie.toLowerCase()===S.fEsp))return false;return true}
+function renderMap(){
+  const list=viv(),svg=$("map"),W=800,H=560,pad=48;
+  let lats=list.map(v=>v.lat),lngs=list.map(v=>v.lng);if(!lats.length){lats=[CITY.lat];lngs=[CITY.lng]}
+  const minLa=Math.min(...lats),maxLa=Math.max(...lats),minLo=Math.min(...lngs),maxLo=Math.max(...lngs);
+  const cLa=(minLa+maxLa)/2,cLo=(minLo+maxLo)/2,k=Math.cos(cLa*Math.PI/180);
+  const spanLa=Math.max(maxLa-minLa,0.12)*1.25,spanLo=Math.max(maxLo-minLo,0.12)*1.25;
+  const s=Math.min((W-2*pad)/(spanLo*k),(H-2*pad)/spanLa);
+  const X=lo=>W/2+(lo-cLo)*k*s,Y=la=>H/2-(la-cLa)*s;
+  const loL=cLo-(W/2)/(k*s),loR=cLo+(W/2)/(k*s),laB=cLa-(H/2)/s,laT=cLa+(H/2)/s;
+  const span=Math.max(loR-loL,laT-laB),step=span>1.2?0.25:span>0.5?0.1:0.05;
+  let g=`<rect width="${W}" height="${H}" fill="var(--land)"/>`;
+  g+=`<polygon points="${X(-94.5)},${Y(19.5)} ${COAST.map(([la,lo])=>X(lo).toFixed(1)+","+Y(la).toFixed(1)).join(" ")} ${X(-92)},${Y(19.5)}" fill="var(--water)" stroke="var(--line)" stroke-width="1.5"/>`;
+  for(let lo=Math.ceil(loL/step)*step;lo<loR;lo+=step){const x=X(lo).toFixed(1);g+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="var(--line)" stroke-width=".6" stroke-dasharray="2 4"/><text x="${+x+4}" y="${H-8}" font-family="IBM Plex Mono,monospace" font-size="11" fill="var(--muted)">${lo.toFixed(2)}°</text>`}
+  for(let la=Math.ceil(laB/step)*step;la<laT;la+=step){const y=Y(la).toFixed(1);g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--line)" stroke-width=".6" stroke-dasharray="2 4"/><text x="6" y="${+y-4}" font-family="IBM Plex Mono,monospace" font-size="11" fill="var(--muted)">${la.toFixed(2)}°</text>`}
+  g+=`<text x="${W-14}" y="28" text-anchor="end" font-family="Bricolage Grotesque,sans-serif" font-weight="600" font-size="15" fill="var(--muted)" font-style="italic">Golfo de México</text>`;
+  const cx=X(CITY.lng),cy=Y(CITY.lat);
+  if(cx>0&&cx<W&&cy>0&&cy<H)g+=`<rect x="${cx-5}" y="${cy-5}" width="10" height="10" fill="var(--fg)" transform="rotate(45 ${cx} ${cy})"/><text x="${cx+10}" y="${cy+4}" font-family="Atkinson Hyperlegible,sans-serif" font-weight="700" font-size="13" fill="var(--fg)">${CITY.n}</text>`;
+  const maxT=Math.max(1,...list.map(total));
+  [...list].sort((a,b)=>total(b)-total(a)).forEach(v=>{
+    const r=8+14*Math.sqrt(total(v)/maxT),x=X(v.lng),y=Y(v.lat),on=matches(v),sel=S.selected===v.id;
+    g+=`<g class="mk" data-id="${esc(v.id)}" tabindex="0" role="button" aria-label="${esc(v.nombre)}" opacity="${on?1:.25}"><circle cx="${x}" cy="${y}" r="${sel?r+4:r}" fill="var(--leaf)" fill-opacity=".85" stroke="${sel?"var(--mazorca)":"var(--surface)"}" stroke-width="${sel?4:2}"/><circle cx="${x}" cy="${y}" r="3" fill="var(--surface)"/>${sel?`<text x="${x}" y="${y-r-10}" text-anchor="middle" font-family="Atkinson Hyperlegible,sans-serif" font-weight="700" font-size="13" fill="var(--fg)" paint-order="stroke" stroke="var(--land)" stroke-width="4">${esc(v.nombre)}</text>`:""}</g>`;
+  });
+  svg.innerHTML=g;
+  svg.querySelectorAll(".mk").forEach(m=>{const f=()=>select(m.dataset.id);m.addEventListener("click",f);m.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}})});
+}
+function select(id){S.selected=id;renderMap();renderList();renderVDetail()}
+function renderStats(){const l=viv(),plants=l.reduce((a,v)=>a+total(v),0),people=l.reduce((a,v)=>a+(+v.integrantes||0),0),prods=l.reduce((a,v)=>a+(v.productos||[]).length,0);
+  $("stats").innerHTML=[[l.length,"viveros"],[plants,"plantas en vivero"],[people,"personas"],[prods,"productos en venta"]].map(([n,t])=>`<div class="stat"><span class="n">${fmt(n)}</span><span class="l">${t}</span></div>`).join("")}
+function renderMapFilters(){const esp=new Set();viv().forEach(v=>(v.inventario||[]).forEach(r=>esp.add(r.especie.toLowerCase())));
+  $("fEsp").innerHTML=`<option value="">Todas</option>`+[...esp].sort().map(e=>`<option value="${esc(e)}"${e===S.fEsp?" selected":""}>${esc(e[0].toUpperCase()+e.slice(1))}</option>`).join("");
+  const mu=[...new Set(viv().map(v=>v.municipio))].sort();const opt=`<option value="">Todos</option>`;
+  $("fMun").innerHTML=opt+mu.map(m=>`<option${m===S.fMun?" selected":""}>${esc(m)}</option>`).join("");
+  $("fMunP").innerHTML=opt+mu.map(m=>`<option${m===S.fMunP?" selected":""}>${esc(m)}</option>`).join("")}
+$("fEsp").onchange=e=>{S.fEsp=e.target.value;renderMap();renderList()};
+$("fMun").onchange=e=>{S.fMun=e.target.value;renderMap();renderList()};
+function renderList(){const l=viv().filter(matches).sort((a,b)=>total(b)-total(a));
+  $("vlist").innerHTML=l.length?l.map(v=>{const n=S.fEsp?((v.inventario||[]).find(r=>r.especie.toLowerCase()===S.fEsp)||{}).cantidad:total(v);
+    return `<button class="vitem" data-id="${esc(v.id)}" aria-pressed="${S.selected===v.id}"><span class="nm">${esc(v.nombre)}</span><span class="cm">${esc(v.comunidad)}, ${esc(v.municipio)}</span><span class="pl">${fmt(n)}${S.fEsp?"":" pl."}</span></button>`}).join(""):`<div class="empty">Ningún vivero tiene esa planta todavía.</div>`;
+  $("vlist").querySelectorAll(".vitem").forEach(b=>b.onclick=()=>select(b.dataset.id))}
+function contactBlock(v,txt){
+  if(!registered())return `<div class="gate"><b>Para ver el contacto necesita estar registrado</b><span class="meta">El teléfono y WhatsApp solo se muestran a viveros y compradores registrados. Registrarse es gratis.</span><div class="actions"><button class="btn pri goReg">Registrarme</button></div></div>`;
+  if(isDemo())return `<div class="gate"><b>Contacto</b><span class="meta">Los viveros de ejemplo no tienen teléfono.</span></div>`;
+  const wa=waLink(v.tel,txt);
+  return `<div class="gate"><b>Contacto</b>${v.responsable?`<span>${esc(v.responsable)}</span>`:""}<span class="mono" style="user-select:all;color:var(--fg)">${esc(v.tel||"Sin teléfono")}</span><div class="actions">${wa?`<a class="btn wa" href="${wa}" target="_blank" rel="noopener">Escribir por WhatsApp</a>`:""}${v.tel?`<button class="btn cp" data-t="${esc(v.tel)}">Copiar número</button>`:""}</div></div>`;
+}
+function wireContact(root){root.querySelectorAll(".goReg").forEach(b=>b.onclick=()=>showTab("cuenta"));root.querySelectorAll(".cp").forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.t);b.textContent="Copiado"}catch(e){b.textContent=b.dataset.t}})}
+function renderVDetail(){const el=$("vdetail"),v=viv().find(x=>x.id===S.selected);
+  if(!v){el.innerHTML=`<h3>Elige un vivero</h3><div class="meta">Toca un círculo del mapa o un nombre de la lista para ver sus plantas, sus productos en venta y cómo contactarlo.</div>`;return}
+  el.innerHTML=`${fotoHTML(v.id,v.fotoId,v.nombre)}
+    <div>${isDemo()?'<span class="tag demo">Ejemplo</span> ':''}<h3>${esc(v.nombre)}</h3></div>
+    <div class="meta">${esc(v.comunidad)}, ${esc(v.municipio)}${v.integrantes?` · ${fmt(v.integrantes)} integrantes`:""}</div>
+    <div class="mono">${(+v.lat).toFixed(5)}, ${(+v.lng).toFixed(5)}</div>
+    <table class="inv"><thead><tr><th>Especie</th><th class="num">Plantas</th><th class="num">Edad</th></tr></thead><tbody>
+      ${(v.inventario||[]).map(r=>`<tr><td>${esc(r.especie)}</td><td class="num">${fmt(r.cantidad)}</td><td class="num">${r.edad?esc(r.edad)+" m":"—"}</td></tr>`).join("")}
+      <tr><td><b>Total</b></td><td class="num"><b>${fmt(total(v))}</b></td><td></td></tr></tbody></table>
+    ${(v.productos||[]).length?`<div><b>En venta:</b> ${(v.productos||[]).map(p=>`<button class="back" style="margin:0 8px 0 0;padding:0" data-p="${esc(p.id)}">${esc(p.titulo)}</button>`).join("")}</div>`:""}
+    ${contactBlock(v,`Hola, vi su vivero "${v.nombre}" en la Red de Viveros Tabasco.`)}
+    <div class="actions"><a class="btn" href="${gmaps(v)}" target="_blank" rel="noopener">Cómo llegar</a></div>`;
+  el.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{showTab("mercado");openProd(v.id,b.dataset.p)});
+  wireContact(el)}
+
+/* ---------- MERCADO ---------- */
+$("fCat").innerHTML=`<option value="">Todas</option>`+CATS.map(c=>`<option>${esc(c)}</option>`).join("");
+$("q").oninput=e=>{S.q=e.target.value.toLowerCase();renderMarket()};
+$("fCat").onchange=e=>{S.fCat=e.target.value;renderMarket()};
+$("fMunP").onchange=e=>{S.fMunP=e.target.value;renderMarket()};
+$("fEnt").onchange=e=>{S.fEnt=e.target.checked;renderMarket()};
+function cardHTML(p){const v=p.v;return `<button class="card" data-v="${esc(v.id)}" data-p="${esc(p.id)}">${fotoHTML(v.id,p.fotoId,p.titulo)}<div class="body">
+  <span>${isDemo()?'<span class="tag demo">Ejemplo</span>':`<span class="tag">${esc(p.cat)}</span>`}</span>
+  <h4>${esc(p.titulo)}</h4><div class="who">${esc(v.nombre)} · ${esc(v.comunidad)}</div>
+  ${p.precio!==""&&p.precio!=null?`<div class="price">${money(p.precio)} <small>/ ${esc(p.unidad)}</small></div>`:`<div class="meta">Precio a tratar</div>`}
+  ${delivBadge(p,v)}</div></button>`}
+function renderMarket(){
+  const l=allProds().filter(p=>(!S.fCat||p.cat===S.fCat)&&(!S.fMunP||p.v.municipio===S.fMunP)&&(!S.fEnt||(p.entrega&&p.entrega.hace))&&(!S.q||(p.titulo+" "+(p.desc||"")+" "+p.v.nombre).toLowerCase().includes(S.q)))
+    .sort((a,b)=>String(b.creado||"").localeCompare(String(a.creado||"")));
+  $("pgrid").innerHTML=l.length?l.map(cardHTML).join(""):`<div class="empty" style="grid-column:1/-1">${allProds().length?"Ningún producto coincide con la búsqueda.":"Todavía no hay productos en venta. Los viveros registrados pueden publicar desde Mi cuenta."}</div>`;
+  $("pgrid").querySelectorAll(".card").forEach(c=>c.onclick=()=>openProd(c.dataset.v,c.dataset.p));
+  if(S.prod)renderProd();
+}
+function openProd(vid,pid){S.prod={vid,pid};renderProd();$("mkList").hidden=true;$("mkDetail").hidden=false;window.scrollTo({top:0})}
+function closeProd(){S.prod=null;$("mkList").hidden=false;$("mkDetail").hidden=true}
+function renderProd(){const v=viv().find(x=>x.id===S.prod.vid),p=v&&(v.productos||[]).find(x=>x.id===S.prod.pid);
+  if(!p){closeProd();return}
+  const e=p.entrega||{},otros=(v.productos||[]).filter(x=>x.id!==p.id);
+  $("mkDetail").innerHTML=`<button class="back" id="backBtn">← Volver al mercado</button>
+  <div class="pd"><div>${fotoHTML(v.id,p.fotoId,p.titulo)}</div>
+  <div class="panel">
+    <span>${isDemo()?'<span class="tag demo">Ejemplo</span>':`<span class="tag">${esc(p.cat)}</span>`}</span>
+    <h2>${esc(p.titulo)}</h2>
+    ${p.precio!==""&&p.precio!=null?`<div class="price" style="font-size:1.6rem">${money(p.precio)} <small>por ${esc(p.unidad)}</small></div>`:`<div class="meta">Precio a tratar con el vivero</div>`}
+    ${p.desc?`<p style="margin:0">${esc(p.desc)}</p>`:""}
+    <dl class="facts">
+      ${p.disponible?`<dt>Disponible</dt><dd>${fmt(p.disponible)} ${esc(p.unidad)}${+p.disponible===1?"":"s"}</dd>`:""}
+      <dt>Vivero</dt><dd>${esc(v.nombre)}</dd>
+      <dt>Ubicación</dt><dd>${esc(v.comunidad)}, ${esc(v.municipio)}</dd>
+      <dt>Entrega</dt><dd>${e.hace?`Sí, hasta ${fmt(e.km)} km${e.costo?` · ${esc(e.costo)}`:""}`:"No. Se recoge en el vivero"}</dd>
+    </dl>
+    <div>${delivBadge(p,v)}</div>
+    ${contactBlock(v,`Hola, me interesa "${p.titulo}" que publicaron en la Red de Viveros Tabasco.`)}
+    <div class="actions"><button class="btn" id="seeMap">Ver vivero en el mapa</button><a class="btn" href="${gmaps(v)}" target="_blank" rel="noopener">Cómo llegar</a></div>
+  </div></div>
+  ${otros.length?`<h3 style="font-family:var(--f-display);margin:24px 0 10px">Más de ${esc(v.nombre)}</h3><div class="grid">${otros.map(o=>cardHTML({...o,v})).join("")}</div>`:""}`;
+  $("backBtn").onclick=closeProd;$("seeMap").onclick=()=>{showTab("mapa");select(v.id)};
+  $("mkDetail").querySelectorAll(".card").forEach(c=>c.onclick=()=>openProd(c.dataset.v,c.dataset.p));
+  wireContact($("mkDetail"))}
+
+/* ---------- CUENTA ---------- */
+function parseCoord(t){const m=String(t).replace(/°/g,"").match(/(-?\d{1,3}(?:\.\d+)?)\s*[,;\s]\s*(-?\d{1,3}(?:\.\d+)?)/);if(!m)return null;let a=+m[1],b=+m[2];if(a<0&&b>0)[a,b]=[b,a];if(b>0)b=-b;if(a<14||a>33||b<-118||b>-86)return null;return{lat:+a.toFixed(6),lng:+b.toFixed(6)}}
+function msg(el,ok,t){el.hidden=false;el.className="msg "+(ok?"ok":"err");el.textContent=t}
+const munOpts=sel=>MUNICIPIOS.map(m=>`<option${m===(sel||"Comalcalco")?" selected":""}>${m}</option>`).join("");
+const COORD_HELP=`<div class="help">En Google Maps, mantén presionado el lugar. Arriba aparecen dos números como <b>18.2641, -93.2237</b>. Cópialos y pégalos aquí.</div>`;
+
+function renderAcctBtn(){const b=$("acctBtn");if(!S.live){b.hidden=true;return}b.hidden=false;const v=myVivero();b.textContent=v?v.nombre:S.perfil?(S.perfil.nombre||"Comprador"):"Registrarme"}
+
+function renderCuenta(){const el=$("cuenta");
+  if(!S.live){el.innerHTML=`<div class="panel"><h2>Registro no disponible aquí</h2><p class="meta" style="margin:0">Esta vista no puede guardar datos. Abre la página con tu sesión iniciada para registrarte como vivero o como comprador.</p></div>`;return}
+  if(!S.me){el.innerHTML=`<div class="panel"><h2>Inicia sesión</h2><p class="meta" style="margin:0">Para registrarte necesitas entrar con tu cuenta.</p></div>`;return}
+  if(S.canWrite===false){el.innerHTML=`<div class="panel"><h2>Solo lectura</h2><p class="meta" style="margin:0">Tu acceso a esta página es solo para ver. Pide al administrador que te dé permiso de participante para registrarte.</p></div>`;return}
+  if(!S.perfilLoaded){el.innerHTML=`<div class="empty">Cargando tu cuenta…</div>`;return}
+  const v=myVivero();
+  if(v)return renderViveroAcct(el,v);
+  if(S.perfil&&S.role!=="vivero")return renderCompradorAcct(el);
+  if(S.role==="vivero")return renderViveroForm(el,null);
+  if(S.role==="comprador")return renderCompradorAcct(el);
+  el.innerHTML=`<h2 style="font-family:var(--f-display);font-weight:800;margin:0 0 12px">¿Cómo quieres registrarte?</h2>
+  <div class="roles"><button class="role" data-r="vivero"><b>Soy vivero</b><span>Registro el vivero de mi grupo, aparezco en el mapa y publico productos para vender.</span><span class="hint">Una cuenta por vivero. La crea el responsable del grupo.</span></button>
+  <button class="role" data-r="comprador"><b>Soy comprador</b><span>Quiero ver el teléfono de los viveros para comprar plantas, frutas o cacao.</span><span class="hint">Solo pedimos tu nombre, municipio y WhatsApp.</span></button></div>`;
+  el.querySelectorAll(".role").forEach(b=>b.onclick=()=>{S.role=b.dataset.r;renderCuenta()});
+}
+
+function renderCompradorAcct(el){const p=S.perfil||{};
+  el.innerHTML=`<form class="panel" id="fc" novalidate style="max-width:560px">
+    <h2>${S.perfil?"Mi perfil de comprador":"Registro de comprador"}</h2>
+    <div class="field"><span>Nombre</span><input id="c_nombre" maxlength="60" value="${esc(p.nombre)}" required></div>
+    <div class="row2"><div class="field"><span>Municipio</span><select id="c_mun">${munOpts(p.municipio)}</select></div>
+    <div class="field"><span>WhatsApp</span><input id="c_tel" inputmode="tel" maxlength="15" value="${esc(p.tel)}" placeholder="933 123 4567"></div></div>
+    <div class="field"><span>Mi ubicación (opcional)</span><input id="c_coord" style="font-family:var(--f-mono)" value="${typeof p.lat==="number"?p.lat+", "+p.lng:""}" placeholder="18.2641, -93.2237"><small>Sirve para saber qué viveros te pueden entregar. Nadie más la ve.</small></div>
+    <div id="fcMsg" class="msg" hidden></div>
+    <div class="actions"><button class="btn pri" type="submit">${S.perfil?"Guardar cambios":"Registrarme"}</button>${S.perfil?"":`<button class="btn" type="button" id="cBack">Volver</button>`}</div>
+    <p class="hint" style="margin:0">Tus datos de comprador son privados: no aparecen en la página.</p>
+  </form>`;
+  if($("cBack"))$("cBack").onclick=()=>{S.role=null;renderCuenta()};
+  $("fc").onsubmit=async e=>{e.preventDefault();const M=$("fcMsg"),nombre=$("c_nombre").value.trim(),tel=$("c_tel").value.trim(),cs=$("c_coord").value.trim();
+    if(!nombre)return msg(M,false,"Escribe tu nombre.");if(tel&&digits(tel).length<10)return msg(M,false,"El WhatsApp debe tener 10 dígitos.");
+    let c=null;if(cs){c=parseCoord(cs);if(!c)return msg(M,false,"La ubicación no se entiende. Debe verse así: 18.2641, -93.2237")}
+    const doc={nombre,municipio:$("c_mun").value,tel,tipo:"comprador",actualizado:new Date().toISOString()};if(c){doc.lat=c.lat;doc.lng=c.lng}
+    try{await S.db.doc("data/users/"+S.me+"/perfil").set(doc);S.perfil=doc;S.role=null;msg(M,true,"Listo. Ya puedes ver el contacto de los viveros.");renderAll()}catch(x){msg(M,false,"No se pudo guardar. Intenta otra vez.")}};
+}
+
+function invRowHTML(r={}){return `<div class="invrow"><input placeholder="Cacao" maxlength="40" value="${esc(r.especie||"")}" aria-label="Especie"><input type="number" min="0" placeholder="Cantidad" value="${esc(r.cantidad??"")}" aria-label="Cantidad"><input type="number" min="0" max="60" placeholder="Meses" value="${esc(r.edad??"")}" aria-label="Edad en meses"><button type="button" class="iconbtn" aria-label="Quitar">×</button></div>`}
+
+function renderViveroForm(el,v,wrap){const d=v||{};
+  const html=`<form class="panel" id="fv" novalidate>
+    <h2>${v?"Datos del vivero":"Registro de vivero"}</h2>
+    <div class="field"><span>Nombre del vivero o grupo</span><input id="v_nombre" maxlength="80" value="${esc(d.nombre)}" placeholder="Ej. Vivero Comunitario Los Cacaos"></div>
+    <div class="row2"><div class="field"><span>Comunidad</span><input id="v_comunidad" maxlength="60" value="${esc(d.comunidad)}" placeholder="Ej. Ra. Cupilco"></div>
+    <div class="field"><span>Municipio</span><select id="v_municipio">${munOpts(d.municipio)}</select></div></div>
+    <div class="field"><span>Coordenadas del vivero</span><input id="v_coord" inputmode="decimal" style="font-family:var(--f-mono)" value="${d.lat!=null?d.lat+", "+d.lng:""}" placeholder="18.2641, -93.2237">${COORD_HELP}</div>
+    <div class="row2"><div class="field"><span>Integrantes del grupo</span><input id="v_integrantes" type="number" min="1" max="200" value="${esc(d.integrantes)}" placeholder="25"></div>
+    <div class="field"><span>Responsable</span><input id="v_responsable" maxlength="60" value="${esc(d.responsable)}" placeholder="Nombre"></div></div>
+    <div class="field"><span>WhatsApp del vivero</span><input id="v_tel" inputmode="tel" maxlength="15" value="${esc(d.tel)}" placeholder="933 123 4567"><small>Solo lo ven viveros y compradores registrados.</small></div>
+    <div class="field"><span>Plantas en el vivero</span><div class="invrows" id="invrows">${(d.inventario&&d.inventario.length?d.inventario:[{},{}]).map(invRowHTML).join("")}</div>
+      <div><button type="button" class="btn" id="addInv">+ Agregar especie</button></div><small>Especie · cantidad · edad en meses</small></div>
+    <div class="field"><span>Foto del vivero</span><input id="v_foto" type="file" accept="image/*"><img id="v_prev" class="preview" hidden alt="Vista previa"></div>
+    ${v?"":`<label class="check"><input type="checkbox" id="v_ok"> <span>El grupo acepta que el nombre, la comunidad y la ubicación aparezcan en el mapa.</span></label>`}
+    <div id="fvMsg" class="msg" hidden></div>
+    <div class="actions"><button class="btn pri" type="submit" id="fvBtn">${v?"Guardar cambios":"Registrar vivero"}</button>${v?"":`<button class="btn" type="button" id="vBack">Volver</button>`}</div>
+  </form>`;
+  if(wrap)wrap.innerHTML=html;else el.innerHTML=html;
+  S.fotoV=undefined;
+  const wireRows=()=>$("invrows").querySelectorAll(".iconbtn").forEach(b=>b.onclick=()=>b.parentElement.remove());wireRows();
+  $("addInv").onclick=()=>{$("invrows").insertAdjacentHTML("beforeend",invRowHTML());wireRows()};
+  if($("vBack"))$("vBack").onclick=()=>{S.role=null;renderCuenta()};
+  $("v_foto").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{S.fotoV=await compress(f);$("v_prev").src=S.fotoV;$("v_prev").hidden=false}catch(x){S.fotoV=undefined}};
+  $("fv").onsubmit=async e=>{e.preventDefault();const M=$("fvMsg");
+    const nombre=$("v_nombre").value.trim(),comunidad=$("v_comunidad").value.trim(),c=parseCoord($("v_coord").value);
+    if(!nombre||!comunidad)return msg(M,false,"Escribe el nombre del vivero y la comunidad.");
+    if(!c)return msg(M,false,"Las coordenadas no se entienden. Deben verse así: 18.2641, -93.2237");
+    const inv=[...$("invrows").children].map(r=>{const i=r.querySelectorAll("input");return{especie:i[0].value.trim(),cantidad:Math.max(0,parseInt(i[1].value)||0),edad:parseInt(i[2].value)||null}}).filter(r=>r.especie&&r.cantidad>0);
+    if(!inv.length)return msg(M,false,"Agrega al menos una especie con su cantidad.");
+    const tel=$("v_tel").value.trim();if(digits(tel).length<10)return msg(M,false,"El WhatsApp debe tener 10 dígitos. Los compradores lo necesitan para contactarte.");
+    if(!v&&!$("v_ok").checked)return msg(M,false,"Marca la casilla de permiso para aparecer en el mapa.");
+    $("fvBtn").disabled=true;
+    try{let fotoId=d.fotoId||null;if(S.fotoV){const nid=await saveFoto(S.fotoV);if(fotoId)await dropFoto(fotoId);fotoId=nid}
+      const doc={nombre,comunidad,municipio:$("v_municipio").value,lat:c.lat,lng:c.lng,integrantes:parseInt($("v_integrantes").value)||null,responsable:$("v_responsable").value.trim(),tel,inventario:inv,fotoId,productos:d.productos||[],actualizado:new Date().toISOString()};
+      await S.db.doc("viveros/"+S.me).set(doc);S.role=null;msg(M,true,v?"Cambios guardados.":"Vivero registrado. Ya aparece en el mapa.")}
+    catch(x){msg(M,false,x&&x.code==="quota_exceeded"?"Se llenó el espacio de la base de datos. Avisa al administrador.":"No se pudo guardar. Revisa tu conexión e intenta otra vez.")}
+    finally{if($("fvBtn"))$("fvBtn").disabled=false}};
+}
+
+function renderViveroAcct(el,v){
+  el.innerHTML=`<div class="acctgrid"><div id="vfWrap"></div>
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+      <div class="panel"><h2>Mis productos en venta</h2><div class="myprods" id="myprods"></div></div>
+      <div id="pfWrap"></div></div></div>`;
+  renderViveroForm(null,v,$("vfWrap"));
+  const ps=v.productos||[];
+  $("myprods").innerHTML=ps.length?ps.map(p=>`<div class="myp"><div>${p.fotoId?`<img class="t" data-fk="${esc(v.id+"/"+p.fotoId)}" src="${esc(S.fotos[v.id+"/"+p.fotoId]||"data:image/gif;base64,R0lGODlhAQABAAAAACw=")}" alt="">`:`<div class="t"></div>`}</div>
+    <div style="min-width:0"><b>${esc(p.titulo)}</b><div class="meta">${p.precio!==""&&p.precio!=null?money(p.precio)+" / "+esc(p.unidad):"Precio a tratar"} · ${p.entrega&&p.entrega.hace?"entrega "+fmt(p.entrega.km)+" km":"sin entrega"}</div></div>
+    <div class="actions"><button class="btn ed" data-id="${esc(p.id)}">Editar</button><button class="btn danger rm" data-id="${esc(p.id)}">Quitar</button></div></div>`).join(""):`<div class="meta">Aún no publicas productos. Usa el formulario de abajo.</div>`;
+  ps.forEach(p=>{if(p.fotoId)fotoHTML(v.id,p.fotoId,"")});
+  $("myprods").querySelectorAll(".ed").forEach(b=>b.onclick=()=>{S.editProd=b.dataset.id;renderProdForm(v);$("pfWrap").scrollIntoView({behavior:"smooth"})});
+  $("myprods").querySelectorAll(".rm").forEach(b=>b.onclick=async()=>{if(!b.dataset.armed){b.dataset.armed=1;b.textContent="¿Seguro? Quitar";return}
+    const p=ps.find(x=>x.id===b.dataset.id);b.disabled=true;try{await S.db.doc("viveros/"+S.me).update({productos:ps.filter(x=>x.id!==p.id),actualizado:new Date().toISOString()});await dropFoto(p.fotoId)}catch(e){b.textContent="Error";b.disabled=false}});
+  renderProdForm(v);
+}
+
+function renderProdForm(v){const ps=v.productos||[],p=ps.find(x=>x.id===S.editProd)||{},e=p.entrega||{};
+  $("pfWrap").innerHTML=`<form class="panel" id="fp" novalidate>
+    <h2>${p.id?"Editar producto":"Publicar producto"}</h2>
+    <div class="meta">Se publica a nombre de <b>${esc(v.nombre)}</b> · ${esc(v.comunidad)}</div>
+    <div class="field"><span>¿Qué vendes?</span><input id="p_titulo" maxlength="70" value="${esc(p.titulo)}" placeholder="Ej. Plantas de cacao injertado"></div>
+    <div class="row2"><div class="field"><span>Categoría</span><select id="p_cat">${CATS.map(c=>`<option${c===(p.cat||"Plantas")?" selected":""}>${c}</option>`).join("")}</select></div>
+      <div class="field"><span>Cantidad disponible</span><input id="p_disp" type="number" min="0" value="${esc(p.disponible)}" placeholder="500"></div></div>
+    <div class="row2"><div class="field"><span>Precio en pesos (opcional)</span><input id="p_precio" type="number" min="0" step="0.5" value="${esc(p.precio)}" placeholder="30"></div>
+      <div class="field"><span>Por</span><select id="p_unidad">${UNIDADES.map(u=>`<option${u===(p.unidad||"planta")?" selected":""}>${u}</option>`).join("")}</select></div></div>
+    <div class="field"><span>Descripción</span><textarea id="p_desc" rows="3" maxlength="300" placeholder="Variedad, edad de la planta, tamaño…">${esc(p.desc)}</textarea></div>
+    <div class="deliv"><label class="check" style="font-weight:700"><input type="checkbox" id="p_ent"${e.hace?" checked":""}> Hago entregas</label>
+      <div class="row2" id="entFields"${e.hace?"":" hidden"}><div class="field"><span>¿Hasta qué distancia?</span><select id="p_km">${[5,10,15,20,30,50,100].map(k=>`<option value="${k}"${k===(+e.km||10)?" selected":""}>${k} km</option>`).join("")}</select></div>
+      <div class="field"><span>Costo de entrega</span><input id="p_costo" maxlength="60" value="${esc(e.costo)}" placeholder="Gratis, $50 por viaje…"></div></div>
+      <small>La distancia se mide en línea recta desde el vivero.</small></div>
+    <div class="field"><span>Foto</span><input id="p_foto" type="file" accept="image/*"><img id="p_prev" class="preview" hidden alt="Vista previa"></div>
+    <div id="fpMsg" class="msg" hidden></div>
+    <div class="actions"><button class="btn pri" type="submit" id="fpBtn">${p.id?"Guardar producto":"Publicar"}</button>${p.id?`<button class="btn" type="button" id="pCancel">Cancelar</button>`:""}</div>
+  </form>`;
+  S.fotoP=undefined;
+  $("p_ent").onchange=ev=>$("entFields").hidden=!ev.target.checked;
+  if($("pCancel"))$("pCancel").onclick=()=>{S.editProd=null;renderProdForm(v)};
+  $("p_foto").onchange=async ev=>{const f=ev.target.files[0];if(!f)return;try{S.fotoP=await compress(f);$("p_prev").src=S.fotoP;$("p_prev").hidden=false}catch(x){S.fotoP=undefined}};
+  $("fp").onsubmit=async ev=>{ev.preventDefault();const M=$("fpMsg"),titulo=$("p_titulo").value.trim();
+    if(!titulo)return msg(M,false,"Escribe qué vendes.");
+    const pr=$("p_precio").value.trim();if(pr!==""&&(isNaN(+pr)||+pr<0))return msg(M,false,"El precio debe ser un número, por ejemplo 30.");
+    const hace=$("p_ent").checked;
+    $("fpBtn").disabled=true;
+    try{let fotoId=p.fotoId||null;if(S.fotoP){const nid=await saveFoto(S.fotoP);if(fotoId)await dropFoto(fotoId);fotoId=nid}
+      const np={id:p.id||rid(),titulo,cat:$("p_cat").value,precio:pr===""?"":+pr,unidad:$("p_unidad").value,disponible:parseInt($("p_disp").value)||null,desc:$("p_desc").value.trim(),
+        entrega:hace?{hace:true,km:+$("p_km").value,costo:$("p_costo").value.trim()}:{hace:false},fotoId,creado:p.creado||new Date().toISOString()};
+      const list=p.id?ps.map(x=>x.id===p.id?np:x):[np,...ps];
+      await S.db.doc("viveros/"+S.me).update({productos:list,actualizado:new Date().toISOString()});
+      S.editProd=null;msg(M,true,p.id?"Producto actualizado.":"Producto publicado en el mercado.")}
+    catch(x){msg(M,false,"No se pudo guardar. Intenta otra vez.")}
+    finally{if($("fpBtn"))$("fpBtn").disabled=false}};
+}
+
+/* ---------- render ---------- */
+let cuentaKey="";
+function renderAll(){
+  $("demoNotice").hidden=!isDemo();renderStats();renderMapFilters();renderMap();renderList();renderVDetail();renderMarket();renderAcctBtn();
+  // avoid wiping half-filled forms: re-render cuenta only when its inputs would change
+  const v=myVivero();const key=[S.live,S.me,S.canWrite,S.perfilLoaded,!!S.perfil,S.role,v?JSON.stringify(v):""].join("|");
+  if(key!==cuentaKey){cuentaKey=key;renderCuenta()}
+}
+renderAll();
+
+(async()=>{
+  const setStatus=(live,t)=>{$("dot").classList.toggle("live",live);$("statusTxt").textContent=t};
+  let db=null,user=null;
+  try{[db,user]=await Promise.all([window.claude?.use?.("db")??null,window.claude?.use?.("user")??null])}catch(e){}
+  if(!db){setStatus(false,"Vista previa sin guardar");renderAll();return}
+  S.db=db;S.live=true;S.user=user;
+  try{S.me=user?await user.id():null}catch(e){}
+  try{S.canWrite=user?await user.can("data.write"):null}catch(e){}
+  setStatus(true,"Datos en vivo");
+  if(S.me){try{const s=await db.doc("data/users/"+S.me+"/perfil").get();S.perfil=s.exists?s.data():null}catch(e){}}
+  S.perfilLoaded=true;renderAll();
+  db.collection("viveros").onSnapshot(s=>{S.viveros=s.docs.map(d=>({id:d.id,...d.data()})).filter(v=>typeof v.lat==="number");
+    if(S.selected&&!viv().some(v=>v.id===S.selected))S.selected=null;renderAll()},()=>setStatus(false,"Sin conexión a los datos"));
+})();
+})();
+</script>
