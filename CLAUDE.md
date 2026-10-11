@@ -37,6 +37,11 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
 - **Fotos**: validar tipo real (finfo), máximo 5 MB, redimensionar a 1200 px de lado mayor y guardar como JPEG/WebP con nombre aleatorio en `public/uploads/viveros/` o `public/uploads/productos/`. En la base solo se guarda el nombre del archivo.
 - Más adelante: PWA (manifest + service worker) para instalar en el celular.
 
+ Seguir el skill php-best-practices, con estas adaptaciones:
+  - Sin Composer: autoload PSR-4 propio con spl_autoload_register en app/core/autoload.php.
+  - Usar declare(strict_types=1) en todos los archivos PHP.
+  - No usar funciones de PHP posteriores a la versión configurada en GoDaddy.
+
 ### Entornos
 - **Local**: XAMPP en Windows, proyecto en `C:\xampp\htdocs\red-viveros`. Base `red_viveros` en phpMyAdmin (`http://localhost/phpmyadmin`).
 - **Producción**: GoDaddy Web Hosting Económico (cPanel, Linux). Solo `public/` debe quedar expuesto; `app/` y `config/` fuera de la raíz web o protegidos con `.htaccess`.
@@ -82,68 +87,12 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
 - Trae Tabasco con 17 municipios, categorías, unidades, 18 especies y un admin inicial (tel. `9930000000`, PIN temporal `123456`, `debe_cambiar_pin = 1`).
 - Si cambia el esquema, actualizar `database.sql` y agregar un archivo de migración en `database/migraciones/AAAA-MM-DD-descripcion.sql`.
 
-## Buenas prácticas de PHP 8.1+
-
-### Seguridad (OWASP Top 10)
-1. **SQL Injection**: usar siempre consultas preparadas con PDO (`:param` o `?`), nunca concatenación de strings.
-2. **XSS**: escapar toda salida HTML con `htmlspecialchars($var, ENT_QUOTES, 'UTF-8')` o `htmlentities()`.
-3. **CSRF**: incluir token en todos los formularios `POST/PUT/DELETE`; validar con `Csrf::verify()`.
-4. **Validación de entrada**: validar tipo, rango, formato en el servidor (no confiar en cliente). Ejemplos:
-   - Email: `filter_var($email, FILTER_VALIDATE_EMAIL)`
-   - Teléfono: 10 dígitos exactos, `ctype_digit()`
-   - Números: `is_numeric()` o `ctype_digit()`
-   - URLs: `filter_var($url, FILTER_VALIDATE_URL)`
-5. **Hashing de contraseñas**: usar `password_hash($pin, PASSWORD_BCRYPT)` e `password_verify()`, nunca MD5 ni SHA1.
-6. **Archivos subidos**: validar tipo real con `finfo_file()`, no confiar en extensión ni `$_FILES['file']['type']`.
-
-### Estilo de código
-- PSR-12: indentación 4 espacios, máximo 120 caracteres por línea.
-- Nombres: `camelCase` para funciones/variables, `PascalCase` para clases, `UPPER_CASE` para constantes.
-- Type hints obligatorios en todas las funciones: `function save(User $user): bool` o `function getId(): ?int`.
-- Visibilidad explícita: `private`, `protected`, `public` en propiedades y métodos.
-- Variables de instancia en `__construct()`, nunca declarar propiedades sin inicializar.
-
-### Estructura de archivos
-- Controllers: reciben `$_GET`, `$_POST`, validan y delegan a Models.
-- Models: contienen lógica de negocio y acceso a BD. Métodos estáticos para consultas comunes.
-- Views: solo HTML con `<?= htmlspecialchars($var) ?>`, sin lógica.
-- Core: clases reutilizables (Router, Database, Session, Csrf, Auth, View).
-
-### Manejo de errores
-- En desarrollo (XAMPP): mostrar errores en pantalla (`error_reporting(E_ALL)`, `display_errors = On`).
-- En producción: guardar en log y mostrar página genérica al usuario. Usar `set_error_handler()` y `set_exception_handler()`.
-- Nunca mostrar paths, stacktraces o SQL en producción.
-
-### Base de datos
-- Collation: `utf8mb4_unicode_ci` en tablas y columnas.
-- Índices en columnas de búsqueda y foreign keys.
-- Transacciones para operaciones relacionadas: `$pdo->beginTransaction()`, `commit()`, `rollBack()`.
-- Prepared statements: `$stmt = $pdo->prepare("SELECT * FROM users WHERE phone = ?"); $stmt->execute([$phone]);`
-
-### Sesiones
-- `session_start()` al inicio, después de `session_name()` y configuración de cookies.
-- Cookie: `HttpOnly = true` (JS no accede), `Secure = true` en producción (HTTPS), `SameSite = Lax` (CSRF).
-- `session_regenerate_id(true)` tras login (destruir vieja sesión).
-- Guardar datos sensibles en sesión servidor, nunca en cliente.
-
-### Variables de entorno
-- Guardar en `config/config.php` (no versionado) o usar variable de entorno.
-- Nunca hardcodear DB host, usuario, contraseña, API keys, tokens.
-- `config/config.example.php` con valores ficticios como referencia.
-
-### Pruebas y validación
-- Verificar con `php -l archivo.php` antes de commit.
-- Testear rutas: métodos GET, POST, redirect, status 200/404/403.
-- Testear validación: entradas vacías, muy largas, tipos incorrectos.
-- Testear seguridad: sin token CSRF, SQL injection, XSS, falta de autenticación.
-
 ## Forma de trabajar
 
 - Editar solo los archivos y líneas necesarias; no regenerar archivos completos sin motivo.
 - Validar sintaxis con `php -l` después de cambiar archivos PHP.
 - Commits pequeños con mensajes en español que describan el cambio.
 - Textos de la interfaz en español de México, claros y cortos.
-- Seguir las buenas prácticas de seguridad de PHP 8.1+ listadas arriba; revisar el código para cumplir con OWASP Top 10.
 
 ## Orden de trabajo
 
@@ -155,99 +104,6 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
 6. Mercado, ficha de producto, publicar/editar productos, contacto con registro en `contactos`.
 7. Panel de administrador: aprobar viveros, comunidades, restablecer PIN, reportes, bloqueo.
 8. Correos de aviso, captcha, consejos de seguridad.
-
-## Patrones comunes en el proyecto
-
-### Validación de entrada
-```php
-// Teléfono (10 dígitos)
-$phone = trim($_POST['phone'] ?? '');
-if (!ctype_digit($phone) || strlen($phone) !== 10) {
-    throw new Exception('Teléfono inválido');
-}
-
-// Email (opcional pero validado si no vacío)
-$email = trim($_POST['email'] ?? '');
-if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    throw new Exception('Email inválido');
-}
-
-// PIN (6 dígitos)
-$pin = trim($_POST['pin'] ?? '');
-if (!ctype_digit($pin) || strlen($pin) !== 6) {
-    throw new Exception('PIN debe tener 6 dígitos');
-}
-
-// Número positivo
-$quantity = (int)($_POST['quantity'] ?? 0);
-if ($quantity <= 0) {
-    throw new Exception('Cantidad debe ser mayor a 0');
-}
-```
-
-### Hashing y verificación de contraseñas
-```php
-// Al guardar PIN
-$hashedPin = password_hash($pin, PASSWORD_BCRYPT, ['cost' => 12]);
-
-// Al verificar
-if (!password_verify($pin, $hashedPin)) {
-    throw new Exception('PIN incorrecto');
-}
-```
-
-### Consultas preparadas (PDO)
-```php
-// Con nombrados
-$stmt = $pdo->prepare('SELECT * FROM usuarios WHERE phone = ?');
-$stmt->execute([$phone]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// Con placeholders nombrados
-$stmt = $pdo->prepare('INSERT INTO usuarios (phone, pin, role) VALUES (:phone, :pin, :role)');
-$stmt->execute([':phone' => $phone, ':pin' => $pin, ':role' => 'comprador']);
-```
-
-### Escapar HTML en vistas
-```php
-<!-- En las vistas -->
-<h1><?= htmlspecialchars($vivero['nombre'], ENT_QUOTES, 'UTF-8') ?></h1>
-<p><?= nl2br(htmlspecialchars($descripcion)) ?></p>
-
-<!-- Atributos HTML -->
-<img src="<?= htmlspecialchars($url) ?>" alt="<?= htmlspecialchars($alt) ?>">
-```
-
-### Manejo de errores y excepciones
-```php
-try {
-    $vivero = Vivero::findById($id);
-    if (!$vivero) {
-        http_response_code(404);
-        return View::render('404');
-    }
-    return View::render('vivero/detalle', ['vivero' => $vivero]);
-} catch (Exception $e) {
-    error_log('Error en viveroDetalle: ' . $e->getMessage());
-    http_response_code(500);
-    return View::render('500');
-}
-```
-
-### Token CSRF en formularios
-```html
-<!-- En vistas -->
-<form method="POST" action="/viveros/guardar">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-    <!-- resto del formulario -->
-</form>
-```
-
-```php
-// En controladores
-Csrf::verify($_POST['csrf_token'] ?? '');
-// Si no es válido, lanza Exception
-```
 
 ## Ideas futuras (no implementar todavía)
 
