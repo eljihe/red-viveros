@@ -126,7 +126,7 @@ $esEdicion = $producto !== null;
             <?php endif; ?>
         </fieldset>
     <?php else: ?>
-        <p class="hint" style="margin-top: 20px;">Guarda el producto primero para poder agregarle fotos.</p>
+        <div class="msg" style="margin-top: 20px;">Primero guarda el producto con el botón de arriba; en cuanto se publique, aquí mismo podrás subirle fotos.</div>
     <?php endif; ?>
 
     <p style="text-align: center; margin-top: 30px;">

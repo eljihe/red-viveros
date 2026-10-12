@@ -161,22 +161,23 @@ final class ProductoController
                     $entregaCosto
                 );
                 flashSet('ok', 'Producto actualizado correctamente.');
-            } else {
-                Producto::crear(
-                    (int) $vivero['id'],
-                    $categoriaId,
-                    $unidadId,
-                    $titulo,
-                    $descripcion,
-                    $precio,
-                    $disponible,
-                    $haceEntrega,
-                    $entregaKm,
-                    $entregaCosto
-                );
-                flashSet('ok', 'Producto publicado correctamente.');
+                redirect('cuenta');
             }
-            redirect('cuenta');
+
+            $nuevoId = Producto::crear(
+                (int) $vivero['id'],
+                $categoriaId,
+                $unidadId,
+                $titulo,
+                $descripcion,
+                $precio,
+                $disponible,
+                $haceEntrega,
+                $entregaKm,
+                $entregaCosto
+            );
+            flashSet('ok', 'Producto publicado correctamente. Ya puedes agregarle fotos.');
+            redirect('panel/productos/editar?id=' . $nuevoId);
         } catch (\Throwable) {
             flashSet('err', 'No se pudo guardar el producto. Intenta nuevamente.');
             redirect($destinoError);
