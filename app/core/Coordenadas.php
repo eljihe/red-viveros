@@ -41,6 +41,20 @@ final class Coordenadas
         return $lat >= 14 && $lat <= 33 && $lng >= -118 && $lng <= -86;
     }
 
+    /** Distancia en línea recta entre dos puntos, en kilómetros (fórmula de Haversine). */
+    public static function distanciaKm(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $radioTierra = 6371.0;
+
+        $deltaLat = deg2rad($lat2 - $lat1);
+        $deltaLng = deg2rad($lng2 - $lng1);
+
+        $a = sin($deltaLat / 2) ** 2
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($deltaLng / 2) ** 2;
+
+        return 2 * $radioTierra * asin(min(1, sqrt($a)));
+    }
+
     /** @return array{0: float, 1: float}|null */
     private static function parseDms(string $text): ?array
     {

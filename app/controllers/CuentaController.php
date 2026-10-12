@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\DatabaseException;
 use App\Core\View;
+use App\Models\Producto;
 use App\Models\Usuario;
 use App\Models\Vivero;
 use PDOException;
@@ -50,9 +51,13 @@ final class CuentaController
         }
 
         $vivero = null;
+        $productos = [];
         if ($usuario['rol_clave'] === 'responsable_vivero') {
             try {
                 $vivero = Vivero::findByUsuarioId((int) Auth::usuarioId());
+                if ($vivero !== null) {
+                    $productos = Producto::listByViveroId((int) $vivero['id']);
+                }
             } catch (DatabaseException | PDOException $exception) {
                 $vivero = null;
             }
@@ -61,6 +66,7 @@ final class CuentaController
         echo View::render('cuenta/panel', [
             'usuario' => $usuario,
             'vivero' => $vivero,
+            'productos' => $productos,
             'mensaje' => $mensaje,
             'tipo' => $tipo,
             'activo' => 'cuenta',

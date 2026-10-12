@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Controllers\AuthController;
 use App\Controllers\CuentaController;
 use App\Controllers\InicioController;
+use App\Controllers\MercadoController;
+use App\Controllers\ProductoController;
 use App\Controllers\RegistroController;
 use App\Controllers\ViveroController;
 use App\Core\Config;
@@ -57,6 +59,19 @@ $router->post('panel/vivero/inventario/guardar', [ViveroController::class, 'guar
 $router->post('panel/vivero/inventario/eliminar', [ViveroController::class, 'eliminarInventario']);
 $router->post('panel/vivero/fotos/subir', [ViveroController::class, 'subirFoto']);
 $router->post('panel/vivero/fotos/eliminar', [ViveroController::class, 'eliminarFoto']);
+
+// Rutas del mercado (público)
+$router->get('mercado', [MercadoController::class, 'index']);
+$router->get('mercado/producto', [MercadoController::class, 'ver']);
+$router->get('mercado/vender', [MercadoController::class, 'vender']);
+
+// Rutas de gestión de productos propios
+$router->get('panel/productos/nuevo', [ProductoController::class, 'mostrarForm']);
+$router->get('panel/productos/editar', [ProductoController::class, 'mostrarForm']);
+$router->post('panel/productos/guardar', [ProductoController::class, 'guardar']);
+$router->post('panel/productos/eliminar', [ProductoController::class, 'eliminar']);
+$router->post('panel/productos/fotos/subir', [ProductoController::class, 'subirFoto']);
+$router->post('panel/productos/fotos/eliminar', [ProductoController::class, 'eliminarFoto']);
 
 try {
     $router->dispatch();

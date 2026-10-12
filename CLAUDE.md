@@ -74,9 +74,9 @@ red-viveros/
 │   ├── urls.php            ← URLs de CDN (Leaflet, Google Fonts)
 │   └── paths.php           ← Rutas de carpetas (logs, uploads)
 ├── app/
-│   ├── core/               ← Router, Database, Session, Csrf, Auth, View, Logger, helpers
-│   ├── controllers/        ← Mapa, Mercado, Producto, Vivero, Cuenta, Auth, Admin, Registro
-│   ├── models/             ← Usuario, Vivero, Inventario, Producto, Contacto, Reporte, catálogos
+│   ├── core/               ← Router, Database, Session, Csrf, Auth, View, Logger, Coordenadas, ImagenUploader, helpers
+│   ├── controllers/        ← Inicio(mapa), Mercado, Producto, Vivero, Cuenta, Auth, Admin, Registro
+│   ├── models/             ← Usuario, Vivero, Inventario, Producto, FotoProducto, Contacto, Categoria, Unidad, catálogos
 │   └── views/              ← layout + plantillas por sección
 ├── logs/                   ← error.log, info.log, audit.log (generados en runtime)
 └── public/
@@ -129,7 +129,7 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
 - IA: publicar productos por voz y foto; alertas de riesgo de moniliasis con pronóstico del clima (Open-Meteo); diagnóstico de enfermedades por foto (moniliasis del cacao, enfermedades del maíz); asistente agrícola; resumen mensual para el programa.
 - Publicidad para tiendas agrícolas locales: siempre marcada "Patrocinado", nunca dentro de un diagnóstico; "¿Dónde lo consigo?" con tiendas cercanas en el mapa.
 
-## Estado actual (2026-10-11)
+## Estado actual (2026-10-12)
 
 ### ✅ Completado
 - **Pasos 1-2**: Core, router, autenticación, cambio obligatorio de PIN
@@ -151,11 +151,18 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
   - Filtros por especie y municipio (client-side, sin recargar página)
   - Botón "Cómo llegar" usa la URL base de Google Maps centralizada en `config/urls.php`
   - Estado vacío: si no hay viveros aprobados, muestra aviso + botón de registro
+- **Paso 6**: Mercado (completo y probado)
+  - `App\Core\ImagenUploader` extrae la subida/redimensionado de fotos (antes solo en `ViveroController`) para reutilizarla también en productos
+  - `Producto::listPublico()`/`findPublicoById()` solo muestran productos (`activo=1`) de viveros `estado='aprobado'`; `cuenta/panel.php` ("Mis productos") muestra todos los propios sin ese filtro
+  - Ficha de producto: fotos, "Más de este vivero", distancia Haversine (`Coordenadas::distanciaKm()`) si el comprador dio su ubicación, botón "Cómo llegar"
+  - Contacto: con sesión se muestra el teléfono directamente (vía `JOIN usuarios` desde `viveros.usuario_id`, porque `viveros` no tiene columna `telefono`); se registra en `contactos` una sola vez por usuario+producto+día (evita inflar el límite con refrescos); límite diario 15 (3 si la cuenta tiene <24h) en `Contacto::puedeContactar()`
+  - "+Vender un producto" (`mercado/vender`) dirige según rol: responsable con vivero → `panel/productos/nuevo`; comprador → aviso; sin sesión → registro
+  - Filtros del mercado por querystring (`q`, `categoria`, `municipio`, `entrega`), sin JS pesado (a diferencia del mapa)
 
 ### ⏳ Pendiente
-- **Paso 6**: Mercado — productos ligados a un vivero, ficha de producto, publicar/editar productos, contacto con registro en `contactos` (ver Función 3 y 4 arriba). **No implementado todavía.**
 - **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)
 - **Paso 8**: Correos, Cloudflare Turnstile, consejos de seguridad
+- **Fuera de alcance del Paso 6** (quedó documentado como mejora futura, no bloqueante): panel de "quién me contactó" en el vivero, y `reportes` — ambos tienen más sentido junto con el Paso 7 (admin)
 
 ### 🔧 Infraestructura en paralelo (no es un paso numerado)
 - Logging centralizado: `App\Core\Logger` (error/info/audit) ya existe y se usa en subida de fotos; falta aplicar `audit()` a login/logout/cambios de PIN cuando se implementen esos flujos de auditoría.
