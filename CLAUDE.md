@@ -109,3 +109,25 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
 
 - IA: publicar productos por voz y foto; alertas de riesgo de moniliasis con pronóstico del clima (Open-Meteo); diagnóstico de enfermedades por foto (moniliasis del cacao, enfermedades del maíz); asistente agrícola; resumen mensual para el programa.
 - Publicidad para tiendas agrícolas locales: siempre marcada "Patrocinado", nunca dentro de un diagnóstico; "¿Dónde lo consigo?" con tiendas cercanas en el mapa.
+
+## Estado actual (2026-10-11)
+
+### ✅ Completado
+- **Pasos 1-2**: Core, router, autenticación, cambio obligatorio de PIN
+- **Paso 3**: Registro de comprador y responsable de vivero (completo y probado)
+  - Dos flujos de registro (comprador/vivero) con validación completa
+  - Preservación de datos de formulario en errores
+  - Ubicación GPS con botón "Usar mi ubicación"
+  - Filtrado dinámico de comunidades por municipio con JavaScript
+  - Estado de vivero auto-establecido como "pendiente"
+
+### ⏳ Pendiente
+- **Paso 4**: Panel del vivero (datos, ubicación en mapa, inventario, fotos)
+- **Paso 5**: Mapa público con Leaflet, OpenStreetMap, satelital Esri, markercluster
+- **Paso 6**: Logging centralizado en `logs/` (estructura documentada en memoria como `paso_6_logging_pendiente.md`)
+- **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)
+- **Paso 8**: Correos, Cloudflare Turnstile, consejos de seguridad
+
+### 🌳 Rama actual
+- **Rama**: `delelop`
+- Último commit: Paso 3 completado y probado
