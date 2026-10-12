@@ -29,6 +29,10 @@ $activo ??= '';
         <div class="header-actions">
             <?php if (estaAutenticado()): ?>
                 <a href="<?= e(url('cuenta')) ?>" class="btn">Hola, <?= e((string) nombreUsuario()) ?></a>
+                <form method="POST" action="<?= e(url('cuenta/salir')) ?>" style="display: inline-flex;">
+                    <?= csrfField() ?>
+                    <button type="submit" class="btn">Cerrar sesión</button>
+                </form>
             <?php else: ?>
                 <a href="<?= e(url('cuenta')) ?>" class="btn">Iniciar sesión</a>
                 <a href="<?= e(url('registro')) ?>" class="btn pri">Registrarme</a>
