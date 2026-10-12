@@ -18,8 +18,6 @@ require dirname(__DIR__) . '/app/core/autoload.php';
 
 Config::load(dirname(__DIR__) . '/config/config.php');
 
-require dirname(__DIR__) . '/app/core/helpers.php';
-
 Logger::init(path('logs'));
 
 date_default_timezone_set('America/Mexico_City');
