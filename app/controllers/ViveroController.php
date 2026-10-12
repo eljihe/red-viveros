@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Coordenadas;
 use App\Core\Csrf;
+use App\Core\Logger;
 use App\Core\Session;
 use App\Core\View;
 use App\Models\Especie;
@@ -209,7 +210,7 @@ final class ViveroController
     {
         try {
             if (!extension_loaded('gd')) {
-                error_log('GD no está disponible');
+                Logger::error('GD no está disponible para procesar imágenes');
                 return false;
             }
 
@@ -223,7 +224,7 @@ final class ViveroController
             }
 
             if (!is_writable($uploadsDir)) {
-                error_log("Carpeta no es escribible: $uploadsDir");
+                Logger::error('Carpeta de uploads no es escribible', ['directorio' => $uploadsDir]);
                 return false;
             }
 
@@ -235,7 +236,7 @@ final class ViveroController
                     if (function_exists('imagecreatefromwebp')) {
                         $source = imagecreatefromwebp($tmpFile);
                     } else {
-                        error_log('WebP no soportado en esta versión de GD');
+                        Logger::error('WebP no soportado en esta versión de GD');
                         return false;
                     }
                     break;
@@ -246,7 +247,7 @@ final class ViveroController
             }
 
             if ($source === false) {
-                error_log("No se pudo crear imagen desde: $tmpFile (mime: $mime)");
+                Logger::error('No se pudo crear imagen desde archivo', ['archivo' => $tmpFile, 'mime' => $mime]);
                 return false;
             }
 
@@ -261,7 +262,7 @@ final class ViveroController
                 $resized = imagecreatetruecolor($newWidth, $newHeight);
                 if ($resized === false) {
                     imagedestroy($source);
-                    error_log("No se pudo crear canvas redimensionado");
+                    Logger::error('No se pudo crear canvas para redimensionamiento', ['width' => $newWidth, 'height' => $newHeight]);
                     return false;
                 }
                 imagecopyresampled($resized, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
@@ -276,14 +277,15 @@ final class ViveroController
             imagedestroy($source);
 
             if (!$result || !file_exists($path)) {
-                error_log("No se pudo guardar JPEG en: $path");
+                Logger::error('No se pudo guardar imagen JPEG', ['ruta' => $path, 'resultado_imagejpeg' => $result]);
                 return false;
             }
 
             $fotoId = FotoVivero::crear($viveroId, $filename, 0);
+            Logger::info('Foto subida exitosamente', ['vivero_id' => $viveroId, 'archivo' => $filename]);
             return $fotoId > 0;
         } catch (\Throwable $e) {
-            error_log("Error en redimensionarGuardar: " . $e->getMessage());
+            Logger::error('Error al procesar foto: ' . $e->getMessage(), ['excepcion' => get_class($e)]);
             return false;
         }
     }

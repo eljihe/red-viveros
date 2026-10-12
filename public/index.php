@@ -9,6 +9,7 @@ use App\Controllers\RegistroController;
 use App\Controllers\ViveroController;
 use App\Core\Config;
 use App\Core\HttpNotFoundException;
+use App\Core\Logger;
 use App\Core\Router;
 use App\Core\Session;
 use App\Core\View;
@@ -16,6 +17,7 @@ use App\Core\View;
 require dirname(__DIR__) . '/app/core/autoload.php';
 
 Config::load(dirname(__DIR__) . '/config/config.php');
+Logger::init(dirname(__DIR__) . '/logs');
 
 date_default_timezone_set('America/Mexico_City');
 
