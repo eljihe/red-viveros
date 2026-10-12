@@ -6,6 +6,10 @@ config/config.php
 public/uploads/*
 !public/uploads/.gitkeep
 
+# Logs generados en tiempo de ejecución
+logs/*.log
+!logs/.gitkeep
+
 # Sistema
 .DS_Store
 Thumbs.db
