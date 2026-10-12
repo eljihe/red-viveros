@@ -48,10 +48,14 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
 - `config/config.php` **no se sube a Git**; existe `config/config.example.php` como plantilla.
 
 ### Configuración centralizada
-- **`config/config.php`**: Configuración de aplicación (entorno, debug, base_url, base de datos). **No versionado**.
+- **`config/config.php`**: Configuración de aplicación (entorno, debug, base_url, base de datos, timezone). **No versionado**.
 - **`config/urls.php`**: URLs de CDN y recursos externos (Leaflet, Google Fonts). Cambiar aquí para usar otros CDN.
 - **`config/paths.php`**: Rutas de carpetas (logs, uploads, etc.). Cambiar aquí si se reubican carpetas.
 - **Helpers**: `url()`, `path()`, `externalUrl()` en `app/core/helpers.php` acceden a estas configuraciones.
+
+**Regla de oro**: Nunca hardcodear valores que cambien entre entornos (timezones, URLs de CDN, rutas, credenciales, dominios). Si algo puede variar en local vs producción, va en un archivo de configuración, no en el código.
+- ✅ Hardcodeable: lógica de negocio, validaciones, límites de sistema (ej. máximo 6 fotos por vivero)
+- ❌ Nunca hardcodear: URLs, rutas, timezone, dominio, BD, API keys, CDNs, puertos
 
 ### Estructura
 ```

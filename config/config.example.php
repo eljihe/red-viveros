@@ -16,6 +16,8 @@ return [
         // Local (XAMPP, subcarpeta):   '/red-viveros'
         // Producción (GoDaddy, raíz):  ''
         'base_url' => '/red-viveros',
+        // Zona horaria (https://www.php.net/manual/en/timezones.php)
+        'timezone' => 'America/Mexico_City',
     ],
     'db' => [
         'host' => '127.0.0.1',

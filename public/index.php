@@ -18,9 +18,9 @@ require dirname(__DIR__) . '/app/core/autoload.php';
 
 Config::load(dirname(__DIR__) . '/config/config.php');
 
-Logger::init(path('logs'));
+date_default_timezone_set((string) Config::get('app.timezone', 'UTC'));
 
-date_default_timezone_set('America/Mexico_City');
+Logger::init(path('logs'));
 
 $debug = (bool) Config::get('app.debug', false);
 
