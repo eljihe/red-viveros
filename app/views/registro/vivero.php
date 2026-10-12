@@ -59,7 +59,7 @@
                     <select name="municipio_id" id="municipio_select" required>
                         <option value="">Selecciona un municipio</option>
                         <?php foreach ($municipios as $m): ?>
-                            <option value="<?= e((string) $m['id']) ?>" <?= ($formData['municipio_id'] == $m['id']) ? 'selected' : '' ?>><?= e($m['nombre']) ?></option>
+                            <option value="<?= e((string) $m['id']) ?>" <?= (($formData['municipio_id'] ?? 0) == $m['id']) ? 'selected' : '' ?>><?= e($m['nombre']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
