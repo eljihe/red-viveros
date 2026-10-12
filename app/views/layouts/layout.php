@@ -10,9 +10,9 @@ $activo ??= '';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Red de Viveros Tabasco</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="<?= e(externalUrl('fonts')) ?>">
 <link rel="stylesheet" href="<?= e(url('css/app.css')) ?>">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjrSciJTVLiS1IVfIo6F8v1cneYwKlztwNeuUlwbuQYwxkY7tNVbS2iNZWC2RW0nCjbqQE3xTvAkwVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="<?= e(externalUrl('leaflet.css')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
 <div class="masthead">
@@ -39,7 +39,7 @@ $activo ??= '';
 <footer class="wrap">
     <p>Red de Viveros Tabasco · Sembrando Vida</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-WXoSL2lrKOSIDIcoxaxEP+sNsjlrBwenJscnsvghnsmZosbZW+76msjE60ai/qXt46Mhx+ow7Zeg+hVPMgm/2HA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="<?= e(externalUrl('leaflet.js')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="<?= e(url('js/mapa-edicion.js')) ?>"></script>
 <script src="<?= e(url('js/formularios.js')) ?>"></script>
 </body>

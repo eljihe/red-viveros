@@ -49,3 +49,24 @@ function flashGet(): array
     }
     return $flash;
 }
+
+function externalUrl(string $key): string
+{
+    static $urls = null;
+    if ($urls === null) {
+        $configFile = dirname(__DIR__, 2) . '/config/urls.php';
+        $urls = file_exists($configFile) ? include $configFile : [];
+    }
+
+    $keys = explode('.', $key);
+    $value = $urls;
+    foreach ($keys as $k) {
+        if (is_array($value) && isset($value[$k])) {
+            $value = $value[$k];
+        } else {
+            return '';
+        }
+    }
+
+    return (string) $value;
+}
