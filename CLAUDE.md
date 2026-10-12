@@ -47,6 +47,12 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
 - **Producción**: GoDaddy Web Hosting Económico (cPanel, Linux). Solo `public/` debe quedar expuesto; `app/` y `config/` fuera de la raíz web o protegidos con `.htaccess`.
 - `config/config.php` **no se sube a Git**; existe `config/config.example.php` como plantilla.
 
+### Configuración centralizada
+- **`config/config.php`**: Configuración de aplicación (entorno, debug, base_url, base de datos). **No versionado**.
+- **`config/urls.php`**: URLs de CDN y recursos externos (Leaflet, Google Fonts). Cambiar aquí para usar otros CDN.
+- **`config/paths.php`**: Rutas de carpetas (logs, uploads, etc.). Cambiar aquí si se reubican carpetas.
+- **Helpers**: `url()`, `path()`, `externalUrl()` en `app/core/helpers.php` acceden a estas configuraciones.
+
 ### Estructura
 ```
 red-viveros/
@@ -56,18 +62,23 @@ red-viveros/
 ├── .gitignore
 ├── config/
 │   ├── config.example.php
-│   └── config.php          ← ignorado por Git
+│   ├── config.php          ← ignorado por Git
+│   ├── urls.php            ← URLs de CDN (Leaflet, Google Fonts)
+│   └── paths.php           ← Rutas de carpetas (logs, uploads)
 ├── app/
-│   ├── core/               ← Router, Database (PDO), Session, Csrf, Auth, View, helpers
-│   ├── controllers/        ← Mapa, Mercado, Producto, Vivero, Cuenta, Auth, Admin
+│   ├── core/               ← Router, Database, Session, Csrf, Auth, View, Logger, helpers
+│   ├── controllers/        ← Mapa, Mercado, Producto, Vivero, Cuenta, Auth, Admin, Registro
 │   ├── models/             ← Usuario, Vivero, Inventario, Producto, Contacto, Reporte, catálogos
 │   └── views/              ← layout + plantillas por sección
+├── logs/                   ← error.log, info.log, audit.log (generados en runtime)
 └── public/
     ├── index.php           ← único punto de entrada
     ├── .htaccess           ← reescritura de rutas
     ├── css/app.css
-    ├── js/                 ← mapa.js, mercado.js, formularios.js
+    ├── js/                 ← mapa-edicion.js, formularios.js
     └── uploads/
+        ├── viveros/        ← fotos de viveros
+        └── productos/      ← fotos de productos
 ```
 
 ## Diseño

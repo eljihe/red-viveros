@@ -70,3 +70,24 @@ function externalUrl(string $key): string
 
     return (string) $value;
 }
+
+function path(string $key): string
+{
+    static $paths = null;
+    if ($paths === null) {
+        $configFile = dirname(__DIR__, 2) . '/config/paths.php';
+        $paths = file_exists($configFile) ? include $configFile : [];
+    }
+
+    $keys = explode('.', $key);
+    $value = $paths;
+    foreach ($keys as $k) {
+        if (is_array($value) && isset($value[$k])) {
+            $value = $value[$k];
+        } else {
+            return '';
+        }
+    }
+
+    return (string) $value;
+}

@@ -209,7 +209,7 @@ final class ViveroController
     private function redimensionarGuardar(string $tmpFile, int $viveroId): bool
     {
         try {
-            $uploadsDir = dirname(__DIR__, 2) . '/public/uploads/viveros';
+            $uploadsDir = path('uploads.viveros');
             if (!is_dir($uploadsDir)) {
                 mkdir($uploadsDir, 0755, true);
             }
