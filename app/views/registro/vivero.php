@@ -82,7 +82,7 @@
                 <span>Ubicación</span>
                 <input type="text" name="coordenadas" placeholder="18.2645, -93.2213" data-gps-target value="<?= e($formData['coordenadas'] ?? '') ?>" required>
                 <button type="button" class="btn" onclick="usarMiUbicacion(this)">Usar mi ubicación</button>
-                <small>Formato: latitud, longitud (ej. 18.2645, -93.2213)</small>
+                <small>Formato: latitud, longitud (ej. 18.2645, -93.2213) o grados/minutos/segundos (ej. 18°12'04.3"N 93°13'28.2"W)</small>
             </div>
         </fieldset>
 
