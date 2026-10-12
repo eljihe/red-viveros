@@ -34,6 +34,14 @@ $datosMapa = array_map(static function (array $v): array {
                 'edad_meses' => $fila['edad_meses'] !== null ? (int) $fila['edad_meses'] : null,
             ];
         }, $v['inventario'])),
+        'servicios' => array_values(array_map(static function (array $fila): array {
+            return [
+                'titulo' => $fila['titulo'],
+                'descripcion' => $fila['descripcion'],
+                'horario' => $fila['horario'],
+                'costo' => $fila['costo'],
+            ];
+        }, $v['servicios'])),
     ];
 }, $viveros);
 ?>

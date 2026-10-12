@@ -3,6 +3,7 @@
 /** @var array<int, array<string, mixed>> $especies */
 /** @var array<int, array<string, mixed>> $inventario */
 /** @var array<int, array<string, mixed>> $fotos */
+/** @var array<int, array<string, mixed>> $servicios */
 /** @var string|null $mensaje */
 /** @var string|null $tipo */
 ?>
@@ -105,6 +106,66 @@
             </table>
         <?php else: ?>
             <p style="color: #666; text-align: center;">Aún no has registrado especies en tu inventario.</p>
+        <?php endif; ?>
+    </fieldset>
+
+    <!-- SECCIÓN: SERVICIOS -->
+    <fieldset style="border: none; padding: 0; margin-bottom: 30px;">
+        <legend>Talleres y servicios</legend>
+        <p class="hint" style="margin-top: 0;">Ej. Taller de injerto de cacao, taller de composta. Se muestran en la ficha de tu vivero en el mapa, sin necesidad de registro.</p>
+
+        <form method="POST" action="<?= e(url('panel/vivero/servicios/guardar')) ?>" style="margin-bottom: 20px;">
+            <div class="field">
+                <span>Nombre del servicio</span>
+                <input type="text" name="titulo" maxlength="80" placeholder="Ej. Taller de injerto de cacao" required>
+            </div>
+            <div class="row2">
+                <div class="field">
+                    <span>Horario (opcional)</span>
+                    <input type="text" name="horario" maxlength="120" placeholder="Ej. Sábados 9am, Bajo cita previa...">
+                </div>
+                <div class="field">
+                    <span>Costo (opcional)</span>
+                    <input type="text" name="costo" maxlength="60" placeholder="Ej. Gratis, $150 por persona...">
+                </div>
+            </div>
+            <div class="field">
+                <span>Descripción (opcional)</span>
+                <textarea name="descripcion" maxlength="500" rows="2" placeholder="Cuéntales a los interesados qué incluye..."></textarea>
+            </div>
+            <?= csrfField() ?>
+            <button type="submit" class="btn pri">Agregar servicio</button>
+        </form>
+
+        <?php if (!empty($servicios)): ?>
+            <table class="tabla-simple">
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Horario</th>
+                        <th>Costo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($servicios as $s): ?>
+                        <tr>
+                            <td><?= e($s['titulo']) ?></td>
+                            <td><?= e($s['horario'] ?? '—') ?></td>
+                            <td><?= e($s['costo'] ?? '—') ?></td>
+                            <td>
+                                <form method="POST" action="<?= e(url('panel/vivero/servicios/eliminar')) ?>" style="display: inline;">
+                                    <input type="hidden" name="id" value="<?= e((string) $s['id']) ?>">
+                                    <?= csrfField() ?>
+                                    <button type="submit" class="btn" style="font-size: 0.85em;">Quitar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p style="color: #666; text-align: center;">Aún no has agregado servicios.</p>
         <?php endif; ?>
     </fieldset>
 

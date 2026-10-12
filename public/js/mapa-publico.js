@@ -99,11 +99,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const integrantes = vivero.integrantes ? ' · ' + escapeHtml(vivero.integrantes) + ' integrantes' : '';
         const comoLlegar = mapsBase + '?q=' + encodeURIComponent(vivero.lat + ',' + vivero.lng);
 
+        const servicios = (vivero.servicios || []).map(function (s) {
+            const detalles = [s.horario, s.costo].filter(Boolean).map(escapeHtml).join(' · ');
+            const descripcion = s.descripcion ? '<div class="hint">' + escapeHtml(s.descripcion) + '</div>' : '';
+            return '<li><strong>' + escapeHtml(s.titulo) + '</strong>' + (detalles ? ' — ' + detalles : '') + descripcion + '</li>';
+        }).join('');
+
+        const bloqueServicios = servicios
+            ? '<div><strong>Talleres y servicios</strong><ul style="margin:6px 0 0; padding-left:18px;">' + servicios + '</ul></div>'
+            : '';
+
         detalleElement.innerHTML = foto
             + '<h3>' + escapeHtml(vivero.nombre) + '</h3>'
             + '<p class="hint">' + escapeHtml(vivero.comunidad) + ', ' + escapeHtml(vivero.municipio) + integrantes + '</p>'
             + historia
             + tabla
+            + bloqueServicios
             + '<div class="actions"><a class="btn pri" href="' + comoLlegar + '" target="_blank" rel="noopener">Cómo llegar</a></div>';
     }
 

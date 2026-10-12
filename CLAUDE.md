@@ -8,7 +8,7 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
 
 ## Funciones
 
-1. **Mapa de viveros** (Leaflet + OpenStreetMap, vista satelital Esri, agrupación con markercluster). Cada vivero aprobado aparece con foto, historia ("Conoce al vivero"), inventario (especie, cantidad, edad en meses) y botón "Cómo llegar" (Google Maps). Filtros por especie y municipio.
+1. **Mapa de viveros** (Leaflet + OpenStreetMap, vista satelital Esri, agrupación con markercluster). Cada vivero aprobado aparece con foto, historia ("Conoce al vivero"), inventario (especie, cantidad, edad en meses), **talleres y servicios** (título, horario y costo en texto libre, ej. "Taller de injerto de cacao") y botón "Cómo llegar" (Google Maps). Filtros por especie y municipio. Los servicios se muestran abiertos, sin necesidad de registro (igual que la historia e inventario).
 2. **Registro de ubicación tocando el mapa** o con "Usar mi ubicación" (GPS). Las coordenadas se llenan solas; también se aceptan pegadas desde Google Maps.
 3. **Mercado**: productos ligados a un vivero. Título, descripción, categoría, precio por unidad (vacío = "Precio a tratar"), cantidad disponible, fotos. Entrega opcional: "Hago entregas", hasta X km y costo. Si el comprador dio su ubicación, se calcula la distancia y se indica si el vivero llega a su zona. Filtros: nombre, categoría, municipio, con entrega. Ficha de producto con "Más de este vivero". Diseño inspirado en comproagro.com.
 4. **Botón "+ Vender un producto"** en el mercado: lleva al formulario si ya tiene vivero; si no, al registro de vivero; si es comprador, explica que el responsable debe registrarse como vivero.
@@ -101,7 +101,7 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
 
 ## Base de datos
 
-`database.sql` (17 tablas, probado en MariaDB 10.11): roles, estados, municipios, comunidades, especies, categorias, unidades, usuarios, compradores, restablecimientos_pin, viveros, inventario, fotos_vivero, productos, fotos_producto, contactos, reportes.
+`database.sql` (18 tablas, probado en MariaDB 10.11): roles, estados, municipios, comunidades, especies, categorias, unidades, usuarios, compradores, restablecimientos_pin, viveros, inventario, fotos_vivero, servicios, productos, fotos_producto, contactos, reportes.
 - El municipio y estado de un vivero se obtienen de `comunidades`; el teléfono del vivero es el de su usuario responsable.
 - Trae Tabasco con 17 municipios, categorías, unidades, 18 especies y un admin inicial (tel. `9930000000`, PIN temporal `123456`, `debe_cambiar_pin = 1`).
 - Si cambia el esquema, actualizar `database.sql` y agregar un archivo de migración en `database/migraciones/AAAA-MM-DD-descripcion.sql`.
@@ -158,6 +158,10 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
   - Contacto: con sesión se muestra el teléfono directamente (vía `JOIN usuarios` desde `viveros.usuario_id`, porque `viveros` no tiene columna `telefono`); se registra en `contactos` una sola vez por usuario+producto+día (evita inflar el límite con refrescos); límite diario 15 (3 si la cuenta tiene <24h) en `Contacto::puedeContactar()`
   - "+Vender un producto" (`mercado/vender`) dirige según rol: responsable con vivero → `panel/productos/nuevo`; comprador → aviso; sin sesión → registro
   - Filtros del mercado por querystring (`q`, `categoria`, `municipio`, `entrega`), sin JS pesado (a diferencia del mapa)
+- **Ampliación**: Talleres y servicios del vivero (completo y probado)
+  - Tabla `servicios` (migración `database/migraciones/2026-10-12-agregar-servicios.sql`): `titulo`, `descripcion`, `horario` y `costo` en texto libre (no estructurado, porque los horarios/costos reales de un vivero no siguen un formato fijo)
+  - Se gestionan desde `/panel/vivero` (agregar/quitar, sin edición in-place, mismo patrón que el inventario); límite de 10 por vivero
+  - Públicos y **sin gating de contacto**: se muestran en la ficha del vivero en el mapa (`Vivero::listAprobadosConDetalle()` + `Servicio::listActivosPorViveros()`), igual que la historia e inventario — no pasan por el sistema de límite diario de `contactos`, que es específico de productos
 
 ### ⏳ Pendiente
 - **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)

@@ -13,6 +13,7 @@ use App\Core\View;
 use App\Models\Especie;
 use App\Models\FotoVivero;
 use App\Models\Inventario;
+use App\Models\Servicio;
 use App\Models\Vivero;
 
 final class ViveroController
@@ -36,6 +37,7 @@ final class ViveroController
         $especies = Especie::listAll();
         $inventario = Inventario::listByViveroId((int) $vivero['id']);
         $fotos = FotoVivero::listByViveroId((int) $vivero['id']);
+        $servicios = Servicio::listByViveroId((int) $vivero['id']);
         $flash = flashGet();
 
         echo View::render('vivero/panel', [
@@ -43,6 +45,7 @@ final class ViveroController
             'especies' => $especies,
             'inventario' => $inventario,
             'fotos' => $fotos,
+            'servicios' => $servicios,
             'mensaje' => $flash['mensaje'],
             'tipo' => $flash['tipo'],
             'activo' => 'panel',
@@ -158,6 +161,81 @@ final class ViveroController
             redirect('panel/vivero');
         } catch (\Throwable) {
             flashSet('err', 'No se pudo remover la especie. Intenta nuevamente.');
+            redirect('panel/vivero');
+        }
+    }
+
+    public function guardarServicio(): void
+    {
+        $vivero = $this->guardarVivero();
+
+        if (!Csrf::isValid($_POST['csrf_token'] ?? null)) {
+            flashSet('err', 'La página expiró, inténtalo de nuevo.');
+            redirect('panel/vivero');
+        }
+
+        $titulo = trim((string) ($_POST['titulo'] ?? ''));
+        $descripcion = trim((string) ($_POST['descripcion'] ?? '')) ?: null;
+        $horario = trim((string) ($_POST['horario'] ?? '')) ?: null;
+        $costo = trim((string) ($_POST['costo'] ?? '')) ?: null;
+
+        if ($titulo === '' || mb_strlen($titulo) > 80) {
+            flashSet('err', 'El nombre del servicio debe tener entre 1 y 80 caracteres.');
+            redirect('panel/vivero');
+        }
+
+        if ($descripcion !== null && mb_strlen($descripcion) > 500) {
+            flashSet('err', 'La descripción debe tener máximo 500 caracteres.');
+            redirect('panel/vivero');
+        }
+
+        if ($horario !== null && mb_strlen($horario) > 120) {
+            flashSet('err', 'El horario debe tener máximo 120 caracteres.');
+            redirect('panel/vivero');
+        }
+
+        if ($costo !== null && mb_strlen($costo) > 60) {
+            flashSet('err', 'El costo debe tener máximo 60 caracteres.');
+            redirect('panel/vivero');
+        }
+
+        if (Servicio::countByViveroId((int) $vivero['id']) >= 10) {
+            flashSet('err', 'Ya tienes el máximo de 10 servicios. Elimina uno para agregar otro.');
+            redirect('panel/vivero');
+        }
+
+        try {
+            Servicio::crear((int) $vivero['id'], $titulo, $descripcion, $horario, $costo);
+            flashSet('ok', 'Servicio agregado correctamente.');
+            redirect('panel/vivero');
+        } catch (\Throwable) {
+            flashSet('err', 'No se pudo agregar el servicio. Intenta nuevamente.');
+            redirect('panel/vivero');
+        }
+    }
+
+    public function eliminarServicio(): void
+    {
+        $vivero = $this->guardarVivero();
+
+        if (!Csrf::isValid($_POST['csrf_token'] ?? null)) {
+            flashSet('err', 'La página expiró, inténtalo de nuevo.');
+            redirect('panel/vivero');
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
+
+        if ($id <= 0) {
+            flashSet('err', 'Servicio inválido.');
+            redirect('panel/vivero');
+        }
+
+        try {
+            Servicio::eliminar($id, (int) $vivero['id']);
+            flashSet('ok', 'Servicio eliminado.');
+            redirect('panel/vivero');
+        } catch (\Throwable) {
+            flashSet('err', 'No se pudo eliminar el servicio. Intenta nuevamente.');
             redirect('panel/vivero');
         }
     }

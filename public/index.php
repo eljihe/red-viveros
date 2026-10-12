@@ -59,6 +59,8 @@ $router->post('panel/vivero/inventario/guardar', [ViveroController::class, 'guar
 $router->post('panel/vivero/inventario/eliminar', [ViveroController::class, 'eliminarInventario']);
 $router->post('panel/vivero/fotos/subir', [ViveroController::class, 'subirFoto']);
 $router->post('panel/vivero/fotos/eliminar', [ViveroController::class, 'eliminarFoto']);
+$router->post('panel/vivero/servicios/guardar', [ViveroController::class, 'guardarServicio']);
+$router->post('panel/vivero/servicios/eliminar', [ViveroController::class, 'eliminarServicio']);
 
 // Rutas del mercado (público)
 $router->get('mercado', [MercadoController::class, 'index']);

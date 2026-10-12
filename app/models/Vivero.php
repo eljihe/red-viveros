@@ -87,10 +87,13 @@ final class Vivero
             $fotosPorVivero[(int) $fila['vivero_id']][] = $fila['archivo'];
         }
 
+        $serviciosPorVivero = Servicio::listActivosPorViveros($ids);
+
         foreach ($viveros as &$vivero) {
             $id = (int) $vivero['id'];
             $vivero['inventario'] = $inventarioPorVivero[$id] ?? [];
             $vivero['fotos'] = $fotosPorVivero[$id] ?? [];
+            $vivero['servicios'] = $serviciosPorVivero[$id] ?? [];
         }
 
         return $viveros;
