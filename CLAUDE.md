@@ -153,10 +153,13 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
   - Estado vacío: si no hay viveros aprobados, muestra aviso + botón de registro
 
 ### ⏳ Pendiente
-- **Paso 6**: Logging centralizado — ya existe `App\Core\Logger` (error/info/audit) usado en subida de fotos; falta aplicar `audit()` a login/logout/cambios de PIN
+- **Paso 6**: Mercado — productos ligados a un vivero, ficha de producto, publicar/editar productos, contacto con registro en `contactos` (ver Función 3 y 4 arriba). **No implementado todavía.**
 - **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)
 - **Paso 8**: Correos, Cloudflare Turnstile, consejos de seguridad
 
+### 🔧 Infraestructura en paralelo (no es un paso numerado)
+- Logging centralizado: `App\Core\Logger` (error/info/audit) ya existe y se usa en subida de fotos; falta aplicar `audit()` a login/logout/cambios de PIN cuando se implementen esos flujos de auditoría.
+
 ### 🌳 Rama actual
 - **Rama**: `main`
-- Último commit: pendiente (Paso 5 recién implementado, no comiteado aún)
+- Último commit: ver `git log` (Paso 5 ya comiteado)
