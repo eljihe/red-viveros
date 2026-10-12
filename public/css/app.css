@@ -93,6 +93,8 @@ legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
 .photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--surface-2);display:block}
 .ph{width:100%;aspect-ratio:4/3;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;color:var(--muted);font-size:.85rem}
 .empty{color:var(--muted);padding:18px;text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+.marcador-vivero{width:34px;height:34px;background:var(--leaf);border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
+.marcador-vivero span{display:block;transform:rotate(45deg);font-size:18px;line-height:1}
 .tabla-simple td.num,.tabla-simple th.num{text-align:right;font-family:var(--f-mono)}
 .filters.boxed{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
 .toggle{display:inline-flex;align-items:center;gap:8px;font-size:.95rem;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}

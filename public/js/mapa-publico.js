@@ -35,6 +35,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const grupo = (typeof L.markerClusterGroup === 'function') ? L.markerClusterGroup() : L.layerGroup();
     mapa.addLayer(grupo);
 
+    const iconoVivero = L.divIcon({
+        className: 'marcador-vivero',
+        html: '<span>🌱</span>',
+        iconSize: [34, 34],
+        iconAnchor: [17, 34]
+    });
+
     const filtroEspecie = document.getElementById('filtro-especie');
     const filtroMunicipio = document.getElementById('filtro-municipio');
     const listaElement = document.getElementById('lista-viveros');
@@ -91,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         grupo.clearLayers();
 
         viveros.filter(coincide).forEach(function (vivero) {
-            const marcador = L.marker([vivero.lat, vivero.lng]);
+            const marcador = L.marker([vivero.lat, vivero.lng], { icon: iconoVivero });
             marcador.on('click', function () {
                 window.location.href = vivero.url;
             });
