@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Core\Auth;
 use App\Core\Config;
 use App\Core\Csrf;
 use App\Core\Session;
@@ -32,6 +33,16 @@ function redirect(string $path): never
 function csrfField(): string
 {
     return Csrf::field();
+}
+
+function estaAutenticado(): bool
+{
+    return Auth::estaAutenticado();
+}
+
+function nombreUsuario(): ?string
+{
+    return Auth::nombre();
 }
 
 function flashSet(string $tipo, string $mensaje): void

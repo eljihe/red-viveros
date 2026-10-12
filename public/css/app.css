@@ -28,6 +28,8 @@ header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-
 .brand .logo{width:42px;height:42px;flex:none}
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.4rem,3.6vw,2rem);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance;color:var(--head-ink)}
 .brand p{margin:2px 0 0;color:#CFE3C6;font-size:.92rem}
+.header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.header-actions .btn{white-space:nowrap}
 .navband{background:var(--head-2)}
 nav.tabs{display:flex;gap:2px;flex-wrap:wrap}
 nav.tabs a{font:600 1rem var(--f-body);background:transparent;color:#E4F1DD;border:none;border-bottom:3px solid transparent;padding:12px 16px;cursor:pointer;text-decoration:none;display:inline-block}

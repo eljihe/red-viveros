@@ -26,6 +26,14 @@ $activo ??= '';
                 <p>Viveros comunitarios de Sembrando Vida · venta directa, sin intermediarios</p>
             </div>
         </div>
+        <div class="header-actions">
+            <?php if (estaAutenticado()): ?>
+                <a href="<?= e(url('cuenta')) ?>" class="btn">Hola, <?= e((string) nombreUsuario()) ?></a>
+            <?php else: ?>
+                <a href="<?= e(url('cuenta')) ?>" class="btn">Iniciar sesión</a>
+                <a href="<?= e(url('registro')) ?>" class="btn pri">Registrarme</a>
+            <?php endif; ?>
+        </div>
     </header>
     <div class="navband">
         <nav class="tabs wrap">
