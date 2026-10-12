@@ -8,6 +8,7 @@ use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\DatabaseException;
+use App\Core\Session;
 use App\Core\View;
 use App\Models\Comprador;
 use App\Models\Comunidad;
@@ -36,8 +37,15 @@ final class RegistroController
         } catch (DatabaseException | PDOException $exception) {
             $municipios = [];
         }
+        $flash = flashGet();
+        $formData = Session::get('registro_comprador_data') ?? [];
+        Session::remove('registro_comprador_data');
+
         echo View::render('registro/comprador', [
             'municipios' => $municipios,
+            'mensaje' => $flash['mensaje'],
+            'tipo' => $flash['tipo'],
+            'formData' => $formData,
             'activo' => 'registro',
         ]);
     }
@@ -47,6 +55,19 @@ final class RegistroController
         if (Auth::estaAutenticado()) {
             redirect('registro');
         }
+
+        $formData = [
+            'nombre' => $_POST['nombre'] ?? '',
+            'apellidos' => $_POST['apellidos'] ?? '',
+            'telefono' => $_POST['telefono'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'municipio_id' => $_POST['municipio_id'] ?? '',
+            'comunidad_colonia' => $_POST['comunidad_colonia'] ?? '',
+            'tipo_comprador' => $_POST['tipo_comprador'] ?? 'particular',
+            'rfc' => $_POST['rfc'] ?? '',
+            'coordenadas' => $_POST['coordenadas'] ?? '',
+        ];
+        Session::set('registro_comprador_data', $formData);
 
         if (!Csrf::isValid($_POST['csrf_token'] ?? null)) {
             flashSet('err', 'La página expiró, inténtalo de nuevo.');
@@ -160,6 +181,7 @@ final class RegistroController
 
             $pdo->commit();
 
+            Session::remove('registro_comprador_data');
             $usuario = Usuario::findById($usuarioId);
             Auth::iniciar($usuario);
             redirect('cuenta');
@@ -168,7 +190,7 @@ final class RegistroController
                 Database::connection()->rollBack();
             } catch (PDOException) {
             }
-            flashSet('err', 'Error: ' . $exception->getMessage());
+            flashSet('err', 'No se pudo crear la cuenta. Intenta nuevamente.');
             redirect('registro/comprador');
         }
     }
@@ -185,9 +207,16 @@ final class RegistroController
             $municipios = [];
             $comunidades = [];
         }
+        $flash = flashGet();
+        $formData = Session::get('registro_vivero_data') ?? [];
+        Session::remove('registro_vivero_data');
+
         echo View::render('registro/vivero', [
             'municipios' => $municipios,
             'comunidades' => $comunidades,
+            'mensaje' => $flash['mensaje'],
+            'tipo' => $flash['tipo'],
+            'formData' => $formData,
             'activo' => 'registro',
         ]);
     }
@@ -197,6 +226,20 @@ final class RegistroController
         if (Auth::estaAutenticado()) {
             redirect('registro');
         }
+
+        $formData = [
+            'nombre' => $_POST['nombre'] ?? '',
+            'apellidos' => $_POST['apellidos'] ?? '',
+            'telefono' => $_POST['telefono'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'nombre_vivero' => $_POST['nombre_vivero'] ?? '',
+            'municipio_id' => $_POST['municipio_id'] ?? '',
+            'comunidad_id' => $_POST['comunidad_id'] ?? '',
+            'historia' => $_POST['historia'] ?? '',
+            'integrantes' => $_POST['integrantes'] ?? '',
+            'coordenadas' => $_POST['coordenadas'] ?? '',
+        ];
+        Session::set('registro_vivero_data', $formData);
 
         if (!Csrf::isValid($_POST['csrf_token'] ?? null)) {
             flashSet('err', 'La página expiró, inténtalo de nuevo.');
@@ -323,6 +366,7 @@ final class RegistroController
 
             $pdo->commit();
 
+            Session::remove('registro_vivero_data');
             $usuario = Usuario::findById($usuarioId);
             Auth::iniciar($usuario);
             redirect('cuenta');
@@ -331,7 +375,7 @@ final class RegistroController
                 Database::connection()->rollBack();
             } catch (PDOException) {
             }
-            flashSet('err', 'Error: ' . $exception->getMessage());
+            flashSet('err', 'No se pudo crear la cuenta. Intenta nuevamente.');
             redirect('registro/vivero');
         }
     }
