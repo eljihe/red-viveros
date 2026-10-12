@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Controllers\InicioController;
+use App\Core\Config;
+use App\Core\HttpNotFoundException;
+use App\Core\Router;
+use App\Core\Session;
+use App\Core\View;
+
+require dirname(__DIR__) . '/app/core/autoload.php';
+
+Config::load(dirname(__DIR__) . '/config/config.php');
+
+date_default_timezone_set('America/Mexico_City');
+
+$debug = (bool) Config::get('app.debug', false);
+
+error_reporting(E_ALL);
+ini_set('display_errors', $debug ? '1' : '0');
+ini_set('display_startup_errors', $debug ? '1' : '0');
+
+Session::start();
+
+$router = new Router();
+
+// Rutas de hoy: solo la página de diagnóstico.
+$router->get('', [InicioController::class, 'index']);
+
+try {
+    $router->dispatch();
+} catch (HttpNotFoundException $exception) {
+    http_response_code(404);
+    echo View::render('errors/404', [
+        'mensaje' => $exception->getMessage(),
+        'debug' => $debug,
+    ]);
+} catch (\Throwable $exception) {
+    http_response_code(500);
+    echo View::render('errors/500', [
+        'excepcion' => $exception,
+        'debug' => $debug,
+    ]);
+}

@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si ya apunta a public/, no reescribir de nuevo (evita bucles).
+    RewriteRule ^public/ - [L]
+
+    # Todo lo demás se sirve desde public/ (funciona igual en subcarpeta
+    # XAMPP que en la raíz de un dominio en GoDaddy, porque las reglas
+    # se evalúan relativas a esta carpeta, no con ruta absoluta).
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
