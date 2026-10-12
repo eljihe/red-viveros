@@ -209,6 +209,7 @@ final class ViveroController
     {
         try {
             if (!extension_loaded('gd')) {
+                error_log('GD no está disponible');
                 return false;
             }
 
@@ -216,13 +217,36 @@ final class ViveroController
             $mime = finfo_file($finfo, $tmpFile);
             finfo_close($finfo);
 
-            $source = match ($mime) {
-                'image/png' => imagecreatefrompng($tmpFile),
-                'image/webp' => imagecreatefromwebp($tmpFile),
-                default => imagecreatefromjpeg($tmpFile),
-            };
+            $uploadsDir = dirname(__DIR__, 2) . '/public/uploads/viveros';
+            if (!is_dir($uploadsDir)) {
+                mkdir($uploadsDir, 0755, true);
+            }
+
+            if (!is_writable($uploadsDir)) {
+                error_log("Carpeta no es escribible: $uploadsDir");
+                return false;
+            }
+
+            switch ($mime) {
+                case 'image/png':
+                    $source = imagecreatefrompng($tmpFile);
+                    break;
+                case 'image/webp':
+                    if (function_exists('imagecreatefromwebp')) {
+                        $source = imagecreatefromwebp($tmpFile);
+                    } else {
+                        error_log('WebP no soportado en esta versión de GD');
+                        return false;
+                    }
+                    break;
+                case 'image/jpeg':
+                default:
+                    $source = imagecreatefromjpeg($tmpFile);
+                    break;
+            }
 
             if ($source === false) {
+                error_log("No se pudo crear imagen desde: $tmpFile (mime: $mime)");
                 return false;
             }
 
@@ -237,6 +261,7 @@ final class ViveroController
                 $resized = imagecreatetruecolor($newWidth, $newHeight);
                 if ($resized === false) {
                     imagedestroy($source);
+                    error_log("No se pudo crear canvas redimensionado");
                     return false;
                 }
                 imagecopyresampled($resized, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
@@ -245,14 +270,20 @@ final class ViveroController
             }
 
             $filename = bin2hex(random_bytes(16)) . '.jpg';
-            $uploadsDir = dirname(__DIR__, 2) . '/public/uploads/viveros';
             $path = $uploadsDir . '/' . $filename;
-            imagejpeg($source, $path, 82);
+
+            $result = imagejpeg($source, $path, 82);
             imagedestroy($source);
+
+            if (!$result || !file_exists($path)) {
+                error_log("No se pudo guardar JPEG en: $path");
+                return false;
+            }
 
             $fotoId = FotoVivero::crear($viveroId, $filename, 0);
             return $fotoId > 0;
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            error_log("Error en redimensionarGuardar: " . $e->getMessage());
             return false;
         }
     }
