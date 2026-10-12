@@ -109,10 +109,6 @@ $datosMapa = array_map(static function (array $v): array {
     ) ?></script>
 <?php endif; ?>
 
-<div class="actions" style="justify-content: center; gap: 15px; margin: 30px 0 10px;">
-    <a href="<?= e(url('registro')) ?>" class="btn pri" style="min-width: 150px;">Registrarme</a>
-    <a href="<?= e(url('cuenta')) ?>" class="btn" style="min-width: 150px;">Mi cuenta</a>
-</div>
-<p style="text-align: center; color: var(--muted); font-size: 0.9rem;">
+<p style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 20px;">
     <a href="<?= e(url('mercado')) ?>" style="color: inherit;">Mercado</a>
 </p>
