@@ -144,8 +144,3 @@
         <a href="<?= e(url('cuenta')) ?>">← Volver a mi cuenta</a>
     </p>
 </div>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjrSciJTVLiS1IVfIo6F8v1cneYwKlztwNeuUlwbuQYwxkY7tNVbS2iNZWC2RW0nCjbqQE3xTvAkwVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-WXoSL2lrKOSIDIcoxaxEP+sNsjlrBwenJscnsvghnsmZosbZW+76msjE60ai/qXt46Mhx+ow7Zeg+hVPMgm/2HA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="<?= e(url('js/mapa-edicion.js')) ?>"></script>
-<script src="<?= e(url('js/formularios.js')) ?>"></script>
