@@ -22,4 +22,7 @@
         <button type="submit" class="btn pri">Entrar</button>
     </form>
     <p><a href="<?= e(url('cuenta/olvide-pin')) ?>">Olvidé mi PIN</a></p>
+    <p style="text-align: center; margin-top: 20px;">
+        ¿No tienes cuenta? <a href="<?= e(url('registro')) ?>">Regístrate</a>
+    </p>
 </div>

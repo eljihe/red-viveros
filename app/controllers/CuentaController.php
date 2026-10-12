@@ -9,6 +9,7 @@ use App\Core\Csrf;
 use App\Core\DatabaseException;
 use App\Core\View;
 use App\Models\Usuario;
+use App\Models\Vivero;
 use PDOException;
 
 final class CuentaController
@@ -48,8 +49,18 @@ final class CuentaController
             redirect('cuenta/cambiar-pin');
         }
 
+        $vivero = null;
+        if ($usuario['rol_clave'] === 'responsable_vivero') {
+            try {
+                $vivero = Vivero::findByUsuarioId((int) Auth::usuarioId());
+            } catch (DatabaseException | PDOException $exception) {
+                $vivero = null;
+            }
+        }
+
         echo View::render('cuenta/panel', [
             'usuario' => $usuario,
+            'vivero' => $vivero,
             'mensaje' => $mensaje,
             'tipo' => $tipo,
             'activo' => 'cuenta',

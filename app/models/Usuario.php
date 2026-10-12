@@ -88,4 +88,28 @@ final class Usuario
     {
         Database::connection()->prepare('UPDATE usuarios SET pin_hash = ? WHERE id = ?')->execute([$pinHash, $id]);
     }
+
+    public static function existeTelefono(string $telefono): bool
+    {
+        $stmt = Database::connection()->prepare('SELECT 1 FROM usuarios WHERE telefono = ?');
+        $stmt->execute([$telefono]);
+        return $stmt->fetch() !== false;
+    }
+
+    public static function existeEmail(string $email): bool
+    {
+        $stmt = Database::connection()->prepare('SELECT 1 FROM usuarios WHERE email = ?');
+        $stmt->execute([$email]);
+        return $stmt->fetch() !== false;
+    }
+
+    public static function crear(int $rolId, string $telefono, string $nombre, string $apellidos, ?string $email, string $pinHash): int
+    {
+        $pdo = Database::connection();
+        $pdo->prepare(
+            'INSERT INTO usuarios (rol_id, telefono, nombre, apellidos, email, pin_hash, acepto_terminos_en)
+             VALUES (?, ?, ?, ?, ?, ?, NOW())'
+        )->execute([$rolId, $telefono, $nombre, $apellidos, $email, $pinHash]);
+        return (int) $pdo->lastInsertId();
+    }
 }
