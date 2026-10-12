@@ -14,6 +14,7 @@ foreach ($viveros as $v) {
 $datosMapa = array_map(static function (array $v): array {
     return [
         'id' => (int) $v['id'],
+        'url' => url('vivero/ficha?id=' . (int) $v['id']),
         'nombre' => $v['nombre'],
         'historia' => $v['historia'],
         'lat' => (float) $v['lat'],
@@ -94,9 +95,9 @@ $datosMapa = array_map(static function (array $v): array {
             <div id="mapa-publico" style="height: 420px;"></div>
         </div>
         <div class="side">
-            <div id="detalle-vivero" class="panel">
+            <div class="panel">
                 <h3>Elige un vivero</h3>
-                <p class="hint">Toca un marcador del mapa o un nombre de la lista para ver sus plantas y cómo llegar.</p>
+                <p class="hint">Toca un marcador del mapa o un nombre de la lista para ver su ficha completa: plantas, servicios, fotos y cómo llegar.</p>
             </div>
             <div id="lista-viveros" class="vlist"></div>
         </div>

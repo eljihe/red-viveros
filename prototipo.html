@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Red de Viveros Tabasco</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -138,6 +139,36 @@ table.inv .num{text-align:right;font-family:var(--f-mono);font-variant-numeric:t
 .deliv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
 .mk{cursor:pointer}
 footer{margin-top:28px;color:var(--muted);font-size:.82rem}
+/* Ficha pública del vivero */
+.vivero-page{display:flex;flex-direction:column;gap:18px;max-width:900px;margin:0 auto}
+.vhero{position:relative;overflow:hidden;border-radius:16px;background:var(--surface-2);min-height:220px;aspect-ratio:16/8;display:grid;place-items:center}
+.vhero .photo,.vhero .ph{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:0}
+.vhero .ph{background:linear-gradient(135deg,#dce8d5,#8caf83);color:#244d2a;font-size:1rem}
+.vhero:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.58));pointer-events:none}
+.vhero-caption{position:absolute;z-index:1;bottom:14px;left:16px;right:16px;color:#fff;font-weight:700;text-shadow:0 1px 4px #000}
+.vgallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.vgallery .vthumb{aspect-ratio:4/3;border-radius:9px;background:linear-gradient(135deg,#dce8d5,#a9c49b);display:grid;place-items:center;color:#315d37;font-size:1.8rem;overflow:hidden}
+.vgallery .vthumb img{width:100%;height:100%;object-fit:cover}
+.vpage-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.vpage-head h2{font-family:var(--f-display);font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.1;margin:4px 0}
+.vchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.vchip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.85rem}
+.vquick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.vquick .panel{align-items:center;text-align:center;padding:12px 8px;gap:2px}
+.vquick strong{font-family:var(--f-display);font-size:1.45rem}
+.vsection-title{font-family:var(--f-display);font-size:1.2rem;margin:0 0 10px}
+.vplant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+.vplant{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+.vplant .plant-icon{font-size:1.7rem}
+.vplant b{line-height:1.2}
+.vplant .meta{font-size:.85rem}
+.vlocation{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.vlocation .coord{font-family:var(--f-mono);font-size:.84rem;overflow-wrap:anywhere}
+.vservice-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.vservice{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start}
+.vservice .ico{font-size:1.35rem}
+@media(max-width:480px){.vhero{aspect-ratio:4/3;min-height:190px}.vquick{gap:6px}.vquick .panel{padding:10px 4px}.vquick strong{font-size:1.25rem}.vgallery{gap:6px}}
+
 </style>
 
 <div class="masthead">
@@ -160,6 +191,7 @@ footer{margin-top:28px;color:var(--muted);font-size:.82rem}
 
   <!-- MAPA -->
   <section id="p-mapa" role="tabpanel">
+    <div id="mapBrowse">
     <div class="stats" id="stats"></div>
     <div class="filters">
       <label class="f">Busco planta<select id="fEsp"></select></label>
@@ -175,6 +207,8 @@ footer{margin-top:28px;color:var(--muted);font-size:.82rem}
         <div class="vlist" id="vlist"></div>
       </div>
     </div>
+    </div>
+    <section id="viveroPage" class="vivero-page" hidden aria-label="Ficha del vivero"></section>
   </section>
 
   <!-- MERCADO -->
@@ -249,7 +283,7 @@ function delivBadge(p,v){const e=p.entrega||{};if(!e.hace)return `<span class="d
 /* Tabs */
 const tabs=[...document.querySelectorAll("nav.tabs button")];
 function showTab(t){tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));["mapa","mercado","cuenta"].forEach(k=>$("p-"+k).hidden=k!==t);try{localStorage.setItem("rv_tab",t)}catch(e){}}
-tabs.forEach(b=>b.addEventListener("click",()=>{showTab(b.dataset.tab);if(b.dataset.tab==="mercado")closeProd()}));
+tabs.forEach(b=>b.addEventListener("click",()=>{showTab(b.dataset.tab);if(b.dataset.tab==="mercado")closeProd();if(b.dataset.tab==="mapa"){closeViveroPage()}}));
 try{const t=localStorage.getItem("rv_tab");if(t&&$("p-"+t))showTab(t)}catch(e){}
 $("acctBtn").onclick=()=>showTab("cuenta");
 $("sellBtn").onclick=()=>{showTab("cuenta");
@@ -298,7 +332,8 @@ function renderMap(){
   svg.innerHTML=g;
   svg.querySelectorAll(".mk").forEach(m=>{const f=()=>select(m.dataset.id);m.addEventListener("click",f);m.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f()}})});
 }
-function select(id){S.selected=id;renderMap();renderList();renderVDetail()}
+function select(id){S.selected=id;renderMap();renderList();renderVDetail();renderViveroPage();$("mapBrowse").hidden=true;$("viveroPage").hidden=false;window.scrollTo({top:0,behavior:"smooth"})}
+function closeViveroPage(){$("viveroPage").hidden=true;$("mapBrowse").hidden=false;window.scrollTo({top:0,behavior:"smooth"})}
 function renderStats(){const l=viv(),plants=l.reduce((a,v)=>a+total(v),0),people=l.reduce((a,v)=>a+(+v.integrantes||0),0),prods=l.reduce((a,v)=>a+(v.productos||[]).length,0);
   $("stats").innerHTML=[[l.length,"viveros"],[plants,"plantas en vivero"],[people,"personas"],[prods,"productos en venta"]].map(([n,t])=>`<div class="stat"><span class="n">${fmt(n)}</span><span class="l">${t}</span></div>`).join("")}
 function renderMapFilters(){const esp=new Set();viv().forEach(v=>(v.inventario||[]).forEach(r=>esp.add(r.especie.toLowerCase())));
@@ -333,6 +368,38 @@ function renderVDetail(){const el=$("vdetail"),v=viv().find(x=>x.id===S.selected
     <div class="actions"><a class="btn" href="${gmaps(v)}" target="_blank" rel="noopener">Cómo llegar</a></div>`;
   el.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{showTab("mercado");openProd(v.id,b.dataset.p)});
   wireContact(el)}
+
+function renderViveroPage(){
+  const el=$("viveroPage"),v=viv().find(x=>x.id===S.selected);if(!el||!v)return;
+  const plants=v.inventario||[],products=v.productos||[],plantTotal=total(v);
+  const hasDelivery=products.some(p=>p.entrega&&p.entrega.hace);
+  const photo=fotoHTML(v.id,v.fotoId,v.nombre);
+  const coords=`${(+v.lat).toFixed(5)}, ${(+v.lng).toFixed(5)}`;
+  el.innerHTML=`<button class="back" id="vPageBack">← Volver al mapa de viveros</button>
+    <div class="vhero">${photo}<div class="vhero-caption">${esc(v.comunidad)}, ${esc(v.municipio)}</div></div>
+    <div class="vgallery" aria-label="Galería de fotos">
+      <div class="vthumb">🌱</div><div class="vthumb">🌿</div><div class="vthumb">🪴</div>
+    </div>
+    <div class="panel">
+      <div class="vpage-head"><div><div class="meta">VIVERO COMUNITARIO · ${esc(v.municipio||"Tabasco")}</div><h2>${esc(v.nombre)}</h2><div class="meta">${esc(v.comunidad)}${v.integrantes?` · ${fmt(v.integrantes)} integrantes`:""}</div>
+        <div class="vchips"><span class="vchip">✓ Vivero ${isDemo()?"de ejemplo":"registrado"}</span>${hasDelivery?'<span class="vchip">🚚 Ofrece entregas</span>':''}<span class="vchip">🌳 ${plants.length} especies</span></div></div></div>
+      ${v.descripcion?`<p>${esc(v.descripcion)}</p>`:`<p class="meta" style="margin:0">Conoce las plantas disponibles y contacta al vivero para consultar existencias, precios y condiciones de entrega.</p>`}
+    </div>
+    <div class="vquick"><div class="panel"><strong>${fmt(plantTotal)}</strong><span class="meta">Plantas registradas</span></div><div class="panel"><strong>${plants.length}</strong><span class="meta">Especies</span></div><div class="panel"><strong>${fmt(v.integrantes||0)}</strong><span class="meta">Integrantes</span></div></div>
+    <div class="panel"><h3 class="vsection-title">🌱 Plantas disponibles</h3>${plants.length?`<div class="vplant-grid">${plants.map((r,i)=>`<div class="vplant"><span class="plant-icon">${["🌳","🍫","🍋","🌿","🥭","🥥"][i%6]}</span><b>${esc(r.especie)}</b><span>${fmt(r.cantidad)} plantas</span><span class="meta">${r.edad?`Edad: ${esc(r.edad)} meses`:"Edad no registrada"}</span></div>`).join("")}</div>`:'<div class="empty">El vivero aún no registra plantas.</div>'}</div>
+    <div class="panel"><h3 class="vsection-title">🧺 Servicios</h3><div class="vservice-list">
+      <div class="vservice"><span class="ico">🌱</span><div><b>Venta de plantas</b><div class="meta">Consulta las especies y cantidades disponibles.</div></div></div>
+      <div class="vservice"><span class="ico">📍</span><div><b>Visita al vivero</b><div class="meta">Coordina la visita con el responsable.</div></div></div>
+      <div class="vservice"><span class="ico">🚚</span><div><b>${hasDelivery?"Entrega disponible en algunos productos":"Entrega por confirmar"}</b><div class="meta">Pregunta por cobertura, costo y disponibilidad.</div></div></div>
+    </div><p class="hint">Los servicios y condiciones deben confirmarse directamente con el vivero.</p></div>
+    ${products.length?`<div class="panel"><h3 class="vsection-title">🛒 Productos de este vivero</h3><div class="grid">${products.map(p=>`<button class="card" data-vpage-product="${esc(p.id)}">${fotoHTML(v.id,p.fotoId,p.titulo)}<div class="body"><h4>${esc(p.titulo)}</h4><div class="price">${p.precio!==""&&p.precio!=null?`${money(p.precio)} <small>/ ${esc(p.unidad)}</small>`:"Precio a tratar"}</div><span class="meta">${p.disponible?`${fmt(p.disponible)} disponibles`:"Consultar disponibilidad"}</span></div></button>`).join("")}</div></div>`:""}
+    <div class="panel"><h3 class="vsection-title">📍 Ubicación</h3><div class="vlocation"><div><div><b>${esc(v.comunidad)}, ${esc(v.municipio)}</b></div><div class="coord">${coords}</div></div><a class="btn pri big" href="${gmaps(v)}" target="_blank" rel="noopener">Cómo llegar ↗</a></div></div>
+    ${contactBlock(v,`Hola, vi el vivero "${v.nombre}" en la Red de Viveros Tabasco y quisiera más información sobre sus plantas.`)}
+    <div class="help">Antes de trasladarte, confirma existencias, precios y horario con el responsable.</div>`;
+  $("vPageBack").onclick=closeViveroPage;
+  el.querySelectorAll("[data-vpage-product]").forEach(b=>b.onclick=()=>{showTab("mercado");openProd(v.id,b.dataset.vpageProduct)});
+  wireContact(el);
+}
 
 /* ---------- MERCADO ---------- */
 $("fCat").innerHTML=`<option value="">Todas</option>`+CATS.map(c=>`<option>${esc(c)}</option>`).join("");
@@ -520,7 +587,7 @@ function renderProdForm(v){const ps=v.productos||[],p=ps.find(x=>x.id===S.editPr
 /* ---------- render ---------- */
 let cuentaKey="";
 function renderAll(){
-  $("demoNotice").hidden=!isDemo();renderStats();renderMapFilters();renderMap();renderList();renderVDetail();renderMarket();renderAcctBtn();
+  $("demoNotice").hidden=!isDemo();renderStats();renderMapFilters();renderMap();renderList();renderVDetail();if(!$("viveroPage").hidden)renderViveroPage();renderMarket();renderAcctBtn();
   // avoid wiping half-filled forms: re-render cuenta only when its inputs would change
   const v=myVivero();const key=[S.live,S.me,S.canWrite,S.perfilLoaded,!!S.perfil,S.role,v?JSON.stringify(v):""].join("|");
   if(key!==cuentaKey){cuentaKey=key;renderCuenta()}
@@ -543,3 +610,5 @@ renderAll();
 })();
 })();
 </script>
+
+</body></html>

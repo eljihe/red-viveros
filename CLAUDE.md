@@ -83,7 +83,7 @@ red-viveros/
     ├── index.php           ← único punto de entrada
     ├── .htaccess           ← reescritura de rutas
     ├── css/app.css
-    ├── js/                 ← mapa-edicion.js, formularios.js
+    ├── js/                 ← mapa-edicion.js, mapa-publico.js, formularios.js
     └── uploads/
         ├── viveros/        ← fotos de viveros
         └── productos/      ← fotos de productos
@@ -162,6 +162,12 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
   - Tabla `servicios` (migración `database/migraciones/2026-10-12-agregar-servicios.sql`): `titulo`, `descripcion`, `horario` y `costo` en texto libre (no estructurado, porque los horarios/costos reales de un vivero no siguen un formato fijo)
   - Se gestionan desde `/panel/vivero` (agregar/quitar, sin edición in-place, mismo patrón que el inventario); límite de 10 por vivero
   - Públicos y **sin gating de contacto**: se muestran en la ficha del vivero en el mapa (`Vivero::listAprobadosConDetalle()` + `Servicio::listActivosPorViveros()`), igual que la historia e inventario — no pasan por el sistema de límite diario de `contactos`, que es específico de productos
+- **Ampliación**: Ficha pública del vivero como página propia (completo y probado)
+  - Antes, el mapa mostraba el detalle del vivero en un panel lateral dentro de la misma página; ahora tocar un marcador o un nombre de la lista **navega** a `vivero/ficha?id=` (`InicioController::ficha()`), igual patrón que la ficha de producto del Mercado
+  - Diseño (hero con foto + galería, chips, estadísticas rápidas, tarjetas de plantas/productos) siguiendo el diseño que el usuario agregó a `prototipo.html` (función `renderViveroPage`) — clases nuevas en `app.css` con prefijo `v*` (`.vhero`, `.vgallery`, `.vchips`, `.vquick`, `.vplant-grid`, `.vservice-list`, `.vlocation`), adaptadas a las variables de tema ya existentes (sin colores fijos, para que siga funcionando en modo oscuro)
+  - `Vivero::findAprobadoConDetalleById()` trae un solo vivero con comunidad/municipio/teléfono (vía `JOIN usuarios`)/inventario/fotos/servicios; 404 si no existe o no está `aprobado`
+  - Secciones: datos, galería (foto principal + `.fotos-grid`), plantas disponibles, talleres y servicios, ubicación + "Cómo llegar", contacto protegido (teléfono solo con sesión, **sin** insertar en `contactos` — eso es específico de ver el teléfono de un producto), y productos publicados por ese vivero (`Producto::listPublico(['vivero_id' => ...])`, filtro nuevo en el mismo método)
+  - `public/js/mapa-publico.js` se simplificó bastante: ya no construye el HTML del detalle, solo navega (`window.location.href` en el marcador, `<a>` en la lista)
 
 ### ⏳ Pendiente
 - **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)

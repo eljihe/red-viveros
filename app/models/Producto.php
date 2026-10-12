@@ -111,7 +111,7 @@ final class Producto
 
     /**
      * Productos públicos: solo de viveros aprobados y activos. $filtros admite
-     * 'q' (texto en título), 'categoria_id', 'municipio_id', 'entrega' (bool).
+     * 'q' (texto en título), 'categoria_id', 'municipio_id', 'vivero_id', 'entrega' (bool).
      *
      * @param array<string, mixed> $filtros
      */
@@ -139,6 +139,12 @@ final class Producto
             if ($municipioId > 0) {
                 $condiciones[] = 'mun.id = ?';
                 $parametros[] = $municipioId;
+            }
+
+            $viveroId = (int) ($filtros['vivero_id'] ?? 0);
+            if ($viveroId > 0) {
+                $condiciones[] = 'v.id = ?';
+                $parametros[] = $viveroId;
             }
 
             if (!empty($filtros['entrega'])) {

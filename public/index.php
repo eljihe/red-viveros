@@ -36,6 +36,7 @@ $router = new Router();
 
 // Rutas de inicio
 $router->get('', [InicioController::class, 'index']);
+$router->get('vivero/ficha', [InicioController::class, 'ficha']);
 
 // Rutas de cuenta y autenticación
 $router->get('cuenta', [CuentaController::class, 'mostrar']);

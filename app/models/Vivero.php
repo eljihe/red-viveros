@@ -98,4 +98,52 @@ final class Vivero
 
         return $viveros;
     }
+
+    /**
+     * Un vivero aprobado con su comunidad/municipio, teléfono del responsable,
+     * inventario, fotos y servicios — para la ficha pública.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function findAprobadoConDetalleById(int $id): ?array
+    {
+        $pdo = Database::connection();
+
+        $stmt = $pdo->prepare(
+            "SELECT v.id, v.nombre, v.historia, v.lat, v.lng, v.integrantes,
+                    c.nombre AS comunidad, m.id AS municipio_id, m.nombre AS municipio,
+                    u.telefono
+             FROM viveros v
+             JOIN comunidades c ON c.id = v.comunidad_id
+             JOIN municipios m ON m.id = c.municipio_id
+             JOIN usuarios u ON u.id = v.usuario_id
+             WHERE v.id = ? AND v.estado = 'aprobado'"
+        );
+        $stmt->execute([$id]);
+        $vivero = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($vivero === false) {
+            return null;
+        }
+
+        $stmtInventario = $pdo->prepare(
+            'SELECT i.especie_id, i.cantidad, i.edad_meses, e.nombre AS especie_nombre
+             FROM inventario i
+             JOIN especies e ON e.id = i.especie_id
+             WHERE i.vivero_id = ?
+             ORDER BY e.nombre ASC'
+        );
+        $stmtInventario->execute([$id]);
+        $vivero['inventario'] = $stmtInventario->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+
+        $stmtFotos = $pdo->prepare(
+            'SELECT archivo FROM fotos_vivero WHERE vivero_id = ? ORDER BY orden ASC, id ASC'
+        );
+        $stmtFotos->execute([$id]);
+        $vivero['fotos'] = array_column($stmtFotos->fetchAll(\PDO::FETCH_ASSOC) ?: [], 'archivo');
+
+        $vivero['servicios'] = Servicio::listActivosPorViveros([$id])[$id] ?? [];
+
+        return $vivero;
+    }
 }
