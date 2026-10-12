@@ -31,7 +31,11 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
 ## Tecnología
 
 - **PHP 8.1+ puro con MVC sencillo, sin framework ni Composer.** Debe funcionar subiendo los archivos a cPanel.
-- **MySQL/MariaDB** con **PDO**, consultas preparadas siempre, `utf8mb4`.
+- **MySQL/MariaDB** con **PDO singleton** centralizado en `App\Core\Database`, consultas preparadas siempre, `utf8mb4`.
+  - **Una sola conexión**: `Database::connection()` retorna la misma instancia PDO singleton en toda la app
+  - **Credenciales en configuración**: se leen de `config/config.php`, nunca hardcodeadas
+  - **Manejo de errores**: captura `PDOException` y lanza `DatabaseException` personalizada
+  - **Atributos PDO seguros**: `ATTR_ERRMODE=EXCEPTION`, `EMULATE_PREPARES=false`, `STRINGIFY_FETCHES=false`
 - **Frontend: HTML5 + CSS propio + JavaScript sin framework.** Alpine.js permitido solo si simplifica formularios dinámicos. No usar React, Vue, Bootstrap ni Tailwind.
 - Tokens **CSRF** en todos los formularios `POST`. Escapar toda salida con `htmlspecialchars`.
 - **Fotos**: validar tipo real (finfo), máximo 5 MB, redimensionar a 1200 px de lado mayor y guardar como JPEG/WebP con nombre aleatorio en `public/uploads/viveros/` o `public/uploads/productos/`. En la base solo se guarda el nombre del archivo.
