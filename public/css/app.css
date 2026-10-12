@@ -39,3 +39,11 @@ footer{margin-top:28px;color:var(--muted);font-size:.82rem}
 .btn.pri{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
 pre{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-family:var(--f-mono);font-size:.85rem}
 code{font-family:var(--f-mono)}
+.field{display:flex;flex-direction:column;gap:4px}
+.field>span{font-weight:700;font-size:.92rem}
+.field small,.hint{color:var(--muted);font-size:.82rem}
+.msg{font-size:.92rem;border-radius:8px;padding:8px 12px;background:var(--surface-2)}
+.msg.ok{color:var(--ok)}
+.msg.err{color:var(--err)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;width:100%}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}

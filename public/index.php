@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Controllers\AuthController;
+use App\Controllers\CuentaController;
 use App\Controllers\InicioController;
 use App\Core\Config;
 use App\Core\HttpNotFoundException;
@@ -25,8 +27,16 @@ Session::start();
 
 $router = new Router();
 
-// Rutas de hoy: solo la página de diagnóstico.
+// Rutas de inicio
 $router->get('', [InicioController::class, 'index']);
+
+// Rutas de cuenta y autenticación
+$router->get('cuenta', [CuentaController::class, 'mostrar']);
+$router->post('cuenta/entrar', [AuthController::class, 'entrar']);
+$router->post('cuenta/salir', [AuthController::class, 'salir']);
+$router->get('cuenta/cambiar-pin', [CuentaController::class, 'mostrarCambioPin']);
+$router->post('cuenta/cambiar-pin', [CuentaController::class, 'cambiarPin']);
+$router->get('cuenta/olvide-pin', [AuthController::class, 'olvidePin']);
 
 try {
     $router->dispatch();
