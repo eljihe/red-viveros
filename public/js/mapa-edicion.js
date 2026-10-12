@@ -1,3 +1,42 @@
+function parseCoordenadasTexto(texto) {
+    texto = (texto || '').trim();
+
+    const patronDms = /(\d{1,3})\s*[°º]\s*(\d{1,2})\s*['′]\s*(\d{1,2}(?:\.\d+)?)\s*["″]?\s*([NSEWnsew])/gu;
+    const coincidencias = [...texto.matchAll(patronDms)];
+
+    if (coincidencias.length === 2) {
+        const valores = {};
+        coincidencias.forEach(function (m) {
+            const grados = parseFloat(m[1]);
+            const minutos = parseFloat(m[2]);
+            const segundos = parseFloat(m[3]);
+            const direccion = m[4].toUpperCase();
+            let decimal = grados + (minutos / 60) + (segundos / 3600);
+            if (direccion === 'S' || direccion === 'W') {
+                decimal *= -1;
+            }
+            valores[direccion] = decimal;
+        });
+
+        const lat = valores.N !== undefined ? valores.N : valores.S;
+        const lng = valores.E !== undefined ? valores.E : valores.W;
+        if (lat !== undefined && lng !== undefined) {
+            return [lat, lng];
+        }
+    }
+
+    const partes = texto.split(',');
+    if (partes.length === 2) {
+        const lat = parseFloat(partes[0]);
+        const lng = parseFloat(partes[1]);
+        if (!isNaN(lat) && !isNaN(lng)) {
+            return [lat, lng];
+        }
+    }
+
+    return [null, null];
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof L === 'undefined') {
         console.error('Leaflet no se cargó correctamente');
@@ -8,27 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const coordenadasInput = document.getElementById('coordenadas-input');
 
     if (!mapaElement || !coordenadasInput) {
-        console.error('Elemento del mapa o input de coordenadas no encontrado');
         return;
     }
 
     try {
-        const parts = coordenadasInput.value.trim().split(',');
-        let lat = 18.2645;
-        let lng = -93.2213;
-
-        if (parts.length === 2) {
-            const parsedLat = parseFloat(parts[0]);
-            const parsedLng = parseFloat(parts[1]);
-            if (!isNaN(parsedLat) && !isNaN(parsedLng)) {
-                lat = parsedLat;
-                lng = parsedLng;
-            }
+        let [lat, lng] = parseCoordenadasTexto(coordenadasInput.value);
+        if (lat === null || lng === null) {
+            lat = 18.2645;
+            lng = -93.2213;
         }
 
         const mapa = L.map('mapa-edicion').setView([lat, lng], 12);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const tileOsm = (window.RV_TILES && window.RV_TILES.osm) || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        L.tileLayer(tileOsm, {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(mapa);
@@ -50,44 +82,20 @@ document.addEventListener('DOMContentLoaded', function() {
             actualizarCoordenadas(e.latlng);
         });
 
+        // Si el usuario edita el campo a mano (decimal o grados/minutos/segundos),
+        // el marcador se mueve también, para que quede claro que sí se registró el cambio.
+        coordenadasInput.addEventListener('input', function() {
+            const [latTexto, lngTexto] = parseCoordenadasTexto(coordenadasInput.value);
+            if (latTexto !== null && lngTexto !== null) {
+                const latlng = L.latLng(latTexto, lngTexto);
+                marcador.setLatLng(latlng);
+                mapa.setView(latlng, mapa.getZoom());
+            }
+        });
+
         window.mapaVivero = mapa;
         window.marcadorVivero = marcador;
-        console.log('Mapa Leaflet inicializado correctamente');
     } catch (error) {
         console.error('Error al inicializar el mapa:', error);
     }
 });
-
-function usarMiUbicacion(button) {
-    if (!navigator.geolocation) {
-        alert('Tu navegador no soporta geolocalización.');
-        return;
-    }
-
-    button.disabled = true;
-    const textOriginal = button.textContent;
-    button.textContent = 'Obteniendo ubicación...';
-
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            const lat = position.coords.latitude.toFixed(4);
-            const lng = position.coords.longitude.toFixed(4);
-            const input = document.getElementById('coordenadas-input');
-            if (input) {
-                input.value = lat + ', ' + lng;
-            }
-            if (window.mapaVivero && window.marcadorVivero) {
-                const latlng = L.latLng(parseFloat(lat), parseFloat(lng));
-                window.mapaVivero.setView(latlng, 12);
-                window.marcadorVivero.setLatLng(latlng);
-            }
-            button.disabled = false;
-            button.textContent = textOriginal;
-        },
-        function(error) {
-            alert('No se pudo obtener tu ubicación. Verifica los permisos.');
-            button.disabled = false;
-            button.textContent = textOriginal;
-        }
-    );
-}

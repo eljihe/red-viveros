@@ -4,6 +4,7 @@ function usarMiUbicacion(button) {
         return;
     }
 
+    const textoOriginal = button.textContent;
     button.disabled = true;
     button.textContent = 'Obteniendo ubicación...';
 
@@ -11,17 +12,28 @@ function usarMiUbicacion(button) {
         function(position) {
             const lat = position.coords.latitude.toFixed(4);
             const lng = position.coords.longitude.toFixed(4);
-            const input = button.parentElement.querySelector('[data-gps-target]');
+            const input = button.parentElement.querySelector('[data-gps-target]')
+                || document.getElementById('coordenadas-input');
+
             if (input) {
                 input.value = lat + ', ' + lng;
+                // Avisa a otros listeners (p. ej. el mapa del panel del vivero) que el valor cambió.
+                input.dispatchEvent(new Event('input', { bubbles: true }));
             }
+
+            if (window.mapaVivero && window.marcadorVivero) {
+                const latlng = L.latLng(parseFloat(lat), parseFloat(lng));
+                window.mapaVivero.setView(latlng, 12);
+                window.marcadorVivero.setLatLng(latlng);
+            }
+
             button.disabled = false;
-            button.textContent = 'Usar mi ubicación';
+            button.textContent = textoOriginal;
         },
         function(error) {
             alert('No se pudo obtener tu ubicación. Verifica los permisos.');
             button.disabled = false;
-            button.textContent = 'Usar mi ubicación';
+            button.textContent = textoOriginal;
         }
     );
 }
