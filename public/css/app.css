@@ -35,7 +35,16 @@ nav.tabs{display:flex;gap:2px;flex-wrap:wrap}
 nav.tabs a{font:600 1rem var(--f-body);background:transparent;color:#E4F1DD;border:none;border-bottom:3px solid transparent;padding:12px 16px;cursor:pointer;text-decoration:none;display:inline-block}
 nav.tabs a:hover{color:#fff}
 nav.tabs a.active{color:#fff;border-bottom-color:var(--mazorca)}
-footer{margin-top:28px;color:var(--muted);font-size:.82rem}
+.site-footer{background:var(--head);margin-top:40px}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;padding-block:32px}
+.footer-col .brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.footer-col .brand strong{color:#fff;font-family:var(--f-display);font-size:1.05rem}
+.footer-col h4{color:#fff;font-family:var(--f-display);font-size:1rem;margin:0 0 10px}
+.footer-text{margin:0 0 6px;font-size:.88rem;color:#CFE3C6}
+.footer-links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.footer-links a{color:#CFE3C6;text-decoration:none;font-size:.9rem}
+.footer-links a:hover{color:#fff;text-decoration:underline}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.15);padding-block:14px;font-size:.78rem;color:#A9C49B;text-align:center}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:700 .95rem var(--f-body);padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;text-decoration:none}
 .btn.pri{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
