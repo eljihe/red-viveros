@@ -139,14 +139,24 @@ Tomar `prototipo.html` como referencia visual (pasar su CSS a `public/css/app.cs
   - Ubicación GPS con botón "Usar mi ubicación"
   - Filtrado dinámico de comunidades por municipio con JavaScript
   - Estado de vivero auto-establecido como "pendiente"
+- **Paso 4**: Panel del vivero (completo y probado)
+  - Edición de datos (nombre, historia, integrantes) con mapa Leaflet arrastrable
+  - Inventario con upsert por especie (PK compuesta vivero_id+especie_id)
+  - Fotos: subida con validación finfo, redimensionado GD con fallback a copy(), límite 6 fotos
+  - `App\Core\Coordenadas` centraliza parseo/validación de coordenadas (usado por Registro y Vivero)
+- **Paso 5**: Mapa público con Leaflet (completo y probado)
+  - `Vivero::listAprobadosConDetalle()` trae viveros aprobados + comunidad/municipio + inventario + fotos en 3 queries
+  - Datos se embeben como JSON (`#datos-mapa`) y `public/js/mapa-publico.js` renderiza marcadores, cluster (markercluster), lista lateral y panel de detalle
+  - Capas OSM y satelital Esri intercambiables (`L.control.layers`); URLs de tiles centralizadas en `config/urls.php` y expuestas a JS vía `window.RV_TILES`/`window.RV_MAPS` (layout.php)
+  - Filtros por especie y municipio (client-side, sin recargar página)
+  - Botón "Cómo llegar" usa la URL base de Google Maps centralizada en `config/urls.php`
+  - Estado vacío: si no hay viveros aprobados, muestra aviso + botón de registro
 
 ### ⏳ Pendiente
-- **Paso 4**: Panel del vivero (datos, ubicación en mapa, inventario, fotos)
-- **Paso 5**: Mapa público con Leaflet, OpenStreetMap, satelital Esri, markercluster
-- **Paso 6**: Logging centralizado en `logs/` (estructura documentada en memoria como `paso_6_logging_pendiente.md`)
+- **Paso 6**: Logging centralizado — ya existe `App\Core\Logger` (error/info/audit) usado en subida de fotos; falta aplicar `audit()` a login/logout/cambios de PIN
 - **Paso 7**: Panel de administrador (aprobar viveros, gestionar comunidades, restablecer PIN, reportes, bloqueo)
 - **Paso 8**: Correos, Cloudflare Turnstile, consejos de seguridad
 
 ### 🌳 Rama actual
-- **Rama**: `delelop`
-- Último commit: Paso 3 completado y probado
+- **Rama**: `main`
+- Último commit: pendiente (Paso 5 recién implementado, no comiteado aún)

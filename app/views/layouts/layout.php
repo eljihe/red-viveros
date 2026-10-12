@@ -13,6 +13,8 @@ $activo ??= '';
 <link rel="stylesheet" href="<?= e(externalUrl('fonts')) ?>">
 <link rel="stylesheet" href="<?= e(url('css/app.css')) ?>">
 <link rel="stylesheet" href="<?= e(externalUrl('leaflet.css')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="<?= e(externalUrl('markercluster.css')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link rel="stylesheet" href="<?= e(externalUrl('markercluster.css_default')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
 <div class="masthead">
@@ -40,7 +42,18 @@ $activo ??= '';
     <p>Red de Viveros Tabasco · Sembrando Vida</p>
 </footer>
 <script src="<?= e(externalUrl('leaflet.js')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="<?= e(externalUrl('markercluster.js')) ?>" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+window.RV_TILES = {
+    osm: <?= json_encode(externalUrl('tiles.osm')) ?>,
+    esri: <?= json_encode(externalUrl('tiles.esri_satelital')) ?>
+};
+window.RV_MAPS = {
+    google: <?= json_encode(externalUrl('maps.google')) ?>
+};
+</script>
 <script src="<?= e(url('js/mapa-edicion.js')) ?>"></script>
+<script src="<?= e(url('js/mapa-publico.js')) ?>"></script>
 <script src="<?= e(url('js/formularios.js')) ?>"></script>
 </body>
 </html>
