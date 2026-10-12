@@ -3,6 +3,7 @@
 /** @var array<int, array<string, mixed>> $comunidades */
 /** @var string|null $mensaje */
 /** @var string|null $tipo */
+/** @var array<string, mixed> $formData */
 ?>
 <div class="panel">
     <h2>Registrar mi vivero</h2>
