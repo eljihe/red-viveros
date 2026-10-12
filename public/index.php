@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\CuentaController;
 use App\Controllers\InicioController;
 use App\Controllers\RegistroController;
+use App\Controllers\ViveroController;
 use App\Core\Config;
 use App\Core\HttpNotFoundException;
 use App\Core\Router;
@@ -45,6 +46,14 @@ $router->get('registro/comprador', [RegistroController::class, 'mostrarComprador
 $router->post('registro/comprador', [RegistroController::class, 'crearComprador']);
 $router->get('registro/vivero', [RegistroController::class, 'mostrarVivero']);
 $router->post('registro/vivero', [RegistroController::class, 'crearVivero']);
+
+// Rutas del panel del vivero
+$router->get('panel/vivero', [ViveroController::class, 'mostrar']);
+$router->post('panel/vivero/datos', [ViveroController::class, 'actualizarDatos']);
+$router->post('panel/vivero/inventario/guardar', [ViveroController::class, 'guardarInventario']);
+$router->post('panel/vivero/inventario/eliminar', [ViveroController::class, 'eliminarInventario']);
+$router->post('panel/vivero/fotos/subir', [ViveroController::class, 'subirFoto']);
+$router->post('panel/vivero/fotos/eliminar', [ViveroController::class, 'eliminarFoto']);
 
 try {
     $router->dispatch();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Auth;
+use App\Core\Coordenadas;
 use App\Core\Csrf;
 use App\Core\Database;
 use App\Core\DatabaseException;
@@ -149,8 +150,8 @@ final class RegistroController
         $lat = null;
         $lng = null;
         if ($coordenadas !== null && strlen($coordenadas) > 0) {
-            [$lat, $lng] = $this->parseCoordinates($coordenadas);
-            if ($lat === null || $lng === null || !$this->isValidTabascoCoordinates($lat, $lng)) {
+            [$lat, $lng] = Coordenadas::parse($coordenadas);
+            if ($lat === null || $lng === null || !Coordenadas::esValidaTabasco($lat, $lng)) {
                 flashSet('err', 'Las coordenadas no son válidas. Deben estar dentro de Tabasco.');
                 redirect('registro/comprador');
             }
@@ -329,8 +330,8 @@ final class RegistroController
             redirect('registro/vivero');
         }
 
-        [$lat, $lng] = $this->parseCoordinates($coordenadas);
-        if ($lat === null || $lng === null || !$this->isValidTabascoCoordinates($lat, $lng)) {
+        [$lat, $lng] = Coordenadas::parse($coordenadas);
+        if ($lat === null || $lng === null || !Coordenadas::esValidaTabasco($lat, $lng)) {
             flashSet('err', 'Las coordenadas no son válidas. Deben estar dentro de Tabasco (lat 14–33, lng -118–-86).');
             redirect('registro/vivero');
         }
@@ -380,22 +381,4 @@ final class RegistroController
         }
     }
 
-    private function parseCoordinates(string $text): array
-    {
-        $text = trim($text);
-        $parts = explode(',', $text);
-        if (count($parts) !== 2) {
-            return [null, null];
-        }
-
-        $lat = (float) trim($parts[0]);
-        $lng = (float) trim($parts[1]);
-
-        return [$lat, $lng];
-    }
-
-    private function isValidTabascoCoordinates(float $lat, float $lng): bool
-    {
-        return $lat >= 14 && $lat <= 33 && $lng >= -118 && $lng <= -86;
-    }
 }

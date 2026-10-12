@@ -29,4 +29,12 @@ final class Vivero
         $row = $stmt->fetch();
         return $row === false ? null : $row;
     }
+
+    public static function actualizar(int $id, string $nombre, ?string $historia, float $lat, float $lng, ?int $integrantes): void
+    {
+        Database::connection()->prepare(
+            'UPDATE viveros SET nombre = ?, historia = ?, lat = ?, lng = ?, integrantes = ?, actualizado_en = NOW()
+             WHERE id = ?'
+        )->execute([$nombre, $historia, $lat, $lng, $integrantes, $id]);
+    }
 }

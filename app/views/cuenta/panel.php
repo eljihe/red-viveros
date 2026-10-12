@@ -32,6 +32,9 @@
         </div>
     <?php endif; ?>
     <div class="actions">
+        <?php if ($vivero !== null): ?>
+            <a href="<?= e(url('panel/vivero')) ?>" class="btn">Editar mi vivero</a>
+        <?php endif; ?>
         <a href="<?= e(url('cuenta/cambiar-pin')) ?>" class="btn">Cambiar PIN</a>
         <form method="POST" action="<?= e(url('cuenta/salir')) ?>" style="display:inline-flex;">
             <?= csrfField() ?>

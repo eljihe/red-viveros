@@ -58,3 +58,16 @@ input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);bor
 .check input{margin-top:4px;width:auto}
 fieldset{margin:0;padding:0}
 legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
+.tabla-simple{width:100%;border-collapse:collapse;margin-top:12px}
+.tabla-simple thead th{background:var(--surface-2);font-weight:700;text-align:left;padding:9px 12px;border:1px solid var(--line);font-size:.92rem}
+.tabla-simple tbody td{padding:9px 12px;border:1px solid var(--line);font-size:.92rem}
+.tabla-simple tbody tr:hover{background:var(--surface-2)}
+@media (max-width:600px){.tabla-simple{font-size:.85rem}.tabla-simple thead th,.tabla-simple tbody td{padding:6px 8px}}
+.fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:12px}
+.foto-item{position:relative;overflow:hidden;border-radius:8px;aspect-ratio:1;background:var(--surface-2)}
+.foto-item img{width:100%;height:100%;object-fit:cover;display:block}
+.foto-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;border:none;padding:0;margin:0}
+.foto-item:hover .foto-overlay{opacity:1}
+.btn-eliminar{background:var(--err);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;padding:0}
+.btn-eliminar:hover{background:#a02e25}
+#mapa-edicion{border-radius:8px;border:1px solid var(--line)}
