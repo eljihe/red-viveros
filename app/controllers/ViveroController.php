@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Coordenadas;
 use App\Core\Csrf;
-use App\Core\Logger;
+use App\Core\ImagenUploader;
 use App\Core\Session;
 use App\Core\View;
 use App\Models\Especie;
@@ -197,101 +197,14 @@ final class ViveroController
             redirect('panel/vivero');
         }
 
-        if (!$this->redimensionarGuardar($file['tmp_name'], (int) $vivero['id'])) {
+        $filename = ImagenUploader::guardarRedimensionada($file['tmp_name'], path('uploads.viveros'));
+        if ($filename === null || FotoVivero::crear((int) $vivero['id'], $filename, 0) <= 0) {
             flashSet('err', 'No se pudo procesar la foto. Intenta con otra.');
             redirect('panel/vivero');
         }
 
         flashSet('ok', 'Foto guardada correctamente.');
         redirect('panel/vivero');
-    }
-
-    private function redimensionarGuardar(string $tmpFile, int $viveroId): bool
-    {
-        try {
-            $uploadsDir = path('uploads.viveros');
-            if (!is_dir($uploadsDir)) {
-                mkdir($uploadsDir, 0755, true);
-            }
-
-            if (!is_writable($uploadsDir)) {
-                Logger::error('Carpeta de uploads no es escribible', ['directorio' => $uploadsDir]);
-                return false;
-            }
-
-            $filename = bin2hex(random_bytes(16)) . '.jpg';
-            $path = $uploadsDir . '/' . $filename;
-
-            if (extension_loaded('gd')) {
-                $finfo = finfo_open(FILEINFO_MIME_TYPE);
-                $mime = finfo_file($finfo, $tmpFile);
-                finfo_close($finfo);
-
-                switch ($mime) {
-                    case 'image/png':
-                        $source = imagecreatefrompng($tmpFile);
-                        break;
-                    case 'image/webp':
-                        if (function_exists('imagecreatefromwebp')) {
-                            $source = imagecreatefromwebp($tmpFile);
-                        } else {
-                            Logger::info('WebP recibido pero GD no lo redimensiona, se guarda como está');
-                            return copy($tmpFile, $path) && FotoVivero::crear($viveroId, $filename, 0) > 0;
-                        }
-                        break;
-                    case 'image/jpeg':
-                    default:
-                        $source = imagecreatefromjpeg($tmpFile);
-                        break;
-                }
-
-                if ($source !== false) {
-                    $width = imagesx($source);
-                    $height = imagesy($source);
-
-                    if ($width > 1200 || $height > 1200) {
-                        $maxDim = max($width, $height);
-                        $ratio = 1200 / $maxDim;
-                        $newWidth = (int) ($width * $ratio);
-                        $newHeight = (int) ($height * $ratio);
-                        $resized = imagecreatetruecolor($newWidth, $newHeight);
-                        if ($resized !== false) {
-                            imagecopyresampled($resized, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-                            imagedestroy($source);
-                            $source = $resized;
-                        }
-                    }
-
-                    $result = imagejpeg($source, $path, 82);
-                    imagedestroy($source);
-
-                    if ($result && file_exists($path)) {
-                        $fotoId = FotoVivero::crear($viveroId, $filename, 0);
-                        Logger::info('Foto redimensionada y guardada', ['vivero_id' => $viveroId, 'archivo' => $filename]);
-                        return $fotoId > 0;
-                    } else {
-                        Logger::error('imagejpeg() falló', ['ruta' => $path]);
-                        return false;
-                    }
-                } else {
-                    Logger::info('GD disponible pero no pudo procesar imagen, se guarda sin redimensionar');
-                    return copy($tmpFile, $path) && FotoVivero::crear($viveroId, $filename, 0) > 0;
-                }
-            } else {
-                Logger::info('GD no disponible, guardando foto sin redimensionar', ['archivo_temporal' => basename($tmpFile)]);
-                if (copy($tmpFile, $path) && file_exists($path)) {
-                    $fotoId = FotoVivero::crear($viveroId, $filename, 0);
-                    Logger::info('Foto guardada sin redimensionar', ['vivero_id' => $viveroId, 'archivo' => $filename]);
-                    return $fotoId > 0;
-                } else {
-                    Logger::error('copy() falló al guardar foto', ['origen' => $tmpFile, 'destino' => $path]);
-                    return false;
-                }
-            }
-        } catch (\Throwable $e) {
-            Logger::error('Excepción en redimensionarGuardar: ' . $e->getMessage(), ['excepcion' => get_class($e), 'linea' => $e->getLine()]);
-            return false;
-        }
     }
 
     public function eliminarFoto(): void
@@ -324,12 +237,7 @@ final class ViveroController
                 redirect('panel/vivero');
             }
 
-            $uploadsDir = dirname(__DIR__, 2) . '/public/uploads/viveros';
-            $path = $uploadsDir . '/' . basename($foto['archivo']);
-            if (file_exists($path)) {
-                unlink($path);
-            }
-
+            ImagenUploader::eliminar(path('uploads.viveros'), $foto['archivo']);
             FotoVivero::eliminar($fotoId, (int) $vivero['id']);
             flashSet('ok', 'Foto eliminada.');
             redirect('panel/vivero');
