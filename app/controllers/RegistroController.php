@@ -152,6 +152,10 @@ final class RegistroController
             $pinHash = password_hash($pin, PASSWORD_BCRYPT, ['cost' => 12]);
             $usuarioId = Usuario::crear(1, $telefono, $nombre, $apellidos, $email, $pinHash);
 
+            if ($usuarioId === 0) {
+                throw new \RuntimeException('No se obtuvo el ID del usuario.');
+            }
+
             Comprador::crear($usuarioId, $municipioId, $comunidadColonia, $tipoComprador, $rfc, $lat, $lng);
 
             $pdo->commit();
@@ -159,12 +163,12 @@ final class RegistroController
             $usuario = Usuario::findById($usuarioId);
             Auth::iniciar($usuario);
             redirect('cuenta');
-        } catch (PDOException $exception) {
+        } catch (\Throwable $exception) {
             try {
                 Database::connection()->rollBack();
             } catch (PDOException) {
             }
-            flashSet('err', 'No se pudo crear la cuenta. Intenta nuevamente.');
+            flashSet('err', 'Error: ' . $exception->getMessage());
             redirect('registro/comprador');
         }
     }
@@ -311,6 +315,10 @@ final class RegistroController
             $pinHash = password_hash($pin, PASSWORD_BCRYPT, ['cost' => 12]);
             $usuarioId = Usuario::crear(2, $telefono, $nombre, $apellidos, $email, $pinHash);
 
+            if ($usuarioId === 0) {
+                throw new \RuntimeException('No se obtuvo el ID del usuario.');
+            }
+
             Vivero::crear($usuarioId, $comunidadId, $nombreVivero, $historia, $lat, $lng, $integrantes);
 
             $pdo->commit();
@@ -318,12 +326,12 @@ final class RegistroController
             $usuario = Usuario::findById($usuarioId);
             Auth::iniciar($usuario);
             redirect('cuenta');
-        } catch (PDOException $exception) {
+        } catch (\Throwable $exception) {
             try {
                 Database::connection()->rollBack();
             } catch (PDOException) {
             }
-            flashSet('err', 'No se pudo crear la cuenta. Intenta nuevamente.');
+            flashSet('err', 'Error: ' . $exception->getMessage());
             redirect('registro/vivero');
         }
     }
