@@ -109,5 +109,13 @@ window.comunidadesPorMunicipio = <?= json_encode(
         return $carry;
     }, [])
 ) ?>;
+window.comunidadIdGuardada = <?= (int) ($formData['comunidad_id'] ?? 0) ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const comunidadSelect = document.getElementById('comunidad_select');
+    if (comunidadSelect && window.comunidadIdGuardada > 0) {
+        comunidadSelect.dataset.savedValue = window.comunidadIdGuardada;
+    }
+});
 </script>
 <script src="<?= e(url('js/formularios.js')) ?>"></script>

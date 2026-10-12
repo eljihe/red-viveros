@@ -31,8 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const comunidadSelect = document.getElementById('comunidad_select');
 
     if (municipioSelect && comunidadSelect && window.comunidadesPorMunicipio) {
-        municipioSelect.addEventListener('change', function() {
-            const municipioId = parseInt(this.value);
+        function actualizarComunidades() {
+            const municipioId = parseInt(municipioSelect.value);
+            const comunidadIdGuardada = parseInt(comunidadSelect.dataset.savedValue || '0');
             comunidadSelect.innerHTML = '';
 
             if (municipioId === 0) {
@@ -48,8 +49,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
             comunidades.forEach(function(c) {
                 const option = new Option(c.nombre, c.id);
+                if (c.id === comunidadIdGuardada) {
+                    option.selected = true;
+                }
                 comunidadSelect.appendChild(option);
             });
-        });
+        }
+
+        // Guardar valor anterior en data attribute para restaurarlo
+        const comunidadIdActual = parseInt(comunidadSelect.value || '0');
+        if (comunidadIdActual > 0) {
+            comunidadSelect.dataset.savedValue = comunidadIdActual;
+        }
+
+        // Inicializar si hay municipio pre-seleccionado
+        if (parseInt(municipioSelect.value) > 0) {
+            actualizarComunidades();
+        }
+
+        municipioSelect.addEventListener('change', actualizarComunidades);
     }
 });
