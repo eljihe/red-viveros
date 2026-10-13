@@ -24,49 +24,66 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
 <div class="vivero-page">
     <p><a href="<?= e(url('')) ?>" class="back">← Volver al mapa de viveros</a></p>
 
-    <div class="vhero">
-        <?php if (!empty($fotos)): ?>
-            <img class="photo" src="<?= e(url('uploads/viveros/' . basename($fotos[0]))) ?>" alt="Foto de <?= e($vivero['nombre']) ?>">
-        <?php else: ?>
-            <div class="ph">Sin foto</div>
-        <?php endif; ?>
-        <div class="vhero-caption"><?= e($vivero['comunidad']) ?>, <?= e($vivero['municipio']) ?></div>
-    </div>
-
-    <?php if (count($fotos) > 1): ?>
-        <div class="vgallery" aria-label="Galería de fotos">
-            <?php foreach (array_slice($fotos, 1, 3) as $foto): ?>
-                <div class="vthumb"><img src="<?= e(url('uploads/viveros/' . basename($foto))) ?>" alt="Foto de <?= e($vivero['nombre']) ?>" loading="lazy"></div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <div class="panel">
-        <div class="vpage-head">
-            <div>
-                <div class="meta">VIVERO COMUNITARIO · <?= e($vivero['municipio']) ?></div>
-                <h2><?= e($vivero['nombre']) ?></h2>
-                <div class="meta">
-                    <?= e($vivero['comunidad']) ?><?php if ($vivero['integrantes']): ?> · <?= e((string) $vivero['integrantes']) ?> integrantes<?php endif; ?>
-                </div>
-                <div class="vchips">
-                    <span class="vchip">✓ Vivero registrado</span>
-                    <?php if ($ofreceEntregas): ?><span class="vchip">🚚 Ofrece entregas</span><?php endif; ?>
-                    <span class="vchip">🌳 <?= e((string) count($vivero['inventario'])) ?> especies</span>
-                </div>
+    <div class="pd">
+        <div>
+            <div class="vhero">
+                <?php if (!empty($fotos)): ?>
+                    <img class="photo" src="<?= e(url('uploads/viveros/' . basename($fotos[0]))) ?>" alt="Foto de <?= e($vivero['nombre']) ?>">
+                <?php else: ?>
+                    <div class="ph">Sin foto</div>
+                <?php endif; ?>
+                <div class="vhero-caption"><?= e($vivero['comunidad']) ?>, <?= e($vivero['municipio']) ?></div>
             </div>
-        </div>
-        <?php if ($vivero['historia']): ?>
-            <p><?= e($vivero['historia']) ?></p>
-        <?php else: ?>
-            <p class="meta" style="margin: 0;">Conoce las plantas disponibles y contacta al vivero para consultar existencias, precios y condiciones de entrega.</p>
-        <?php endif; ?>
-    </div>
 
-    <div class="vquick">
-        <div class="panel"><strong><?= e((string) $totalPlantas) ?></strong><span class="meta">Plantas registradas</span></div>
-        <div class="panel"><strong><?= e((string) count($vivero['inventario'])) ?></strong><span class="meta">Especies</span></div>
-        <div class="panel"><strong><?= e((string) ($vivero['integrantes'] ?? 0)) ?></strong><span class="meta">Integrantes</span></div>
+            <?php if (count($fotos) > 1): ?>
+                <div class="vgallery" aria-label="Galería de fotos">
+                    <?php foreach (array_slice($fotos, 1, 3) as $foto): ?>
+                        <div class="vthumb"><img src="<?= e(url('uploads/viveros/' . basename($foto))) ?>" alt="Foto de <?= e($vivero['nombre']) ?>" loading="lazy"></div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="panel">
+            <div class="meta">VIVERO COMUNITARIO · <?= e($vivero['municipio']) ?></div>
+            <h2 style="margin: 4px 0;"><?= e($vivero['nombre']) ?></h2>
+            <div class="meta">
+                <?= e($vivero['comunidad']) ?><?php if ($vivero['integrantes']): ?> · <?= e((string) $vivero['integrantes']) ?> integrantes<?php endif; ?>
+            </div>
+            <div class="vchips">
+                <span class="vchip">✓ Vivero registrado</span>
+                <?php if ($ofreceEntregas): ?><span class="vchip">🚚 Ofrece entregas</span><?php endif; ?>
+                <span class="vchip">🌳 <?= e((string) count($vivero['inventario'])) ?> especies</span>
+                <span class="vchip">🌿 <?= e((string) $totalPlantas) ?> plantas</span>
+            </div>
+
+            <?php if ($vivero['historia']): ?>
+                <p style="margin: 10px 0 0;"><?= e($vivero['historia']) ?></p>
+            <?php endif; ?>
+
+            <div class="vlocation" style="margin-top: 10px;">
+                <div>
+                    <div class="coord"><?= e((string) $vivero['lat']) ?>, <?= e((string) $vivero['lng']) ?></div>
+                </div>
+                <a class="btn pri" href="<?= e($comoLlegar) ?>" target="_blank" rel="noopener">Cómo llegar ↗</a>
+            </div>
+
+            <?php if ($telefonoVisible): ?>
+                <div class="gate" style="margin-top: 10px;">
+                    <b>Contacto</b>
+                    <span style="font-family: var(--f-mono); user-select: all;"><?= e($vivero['telefono']) ?></span>
+                    <div class="actions">
+                        <a class="btn wa" href="<?= e(externalUrl('whatsapp') . '52' . $vivero['telefono'] . '?text=' . rawurlencode('Hola, vi el vivero "' . $vivero['nombre'] . '" en la Red de Viveros Tabasco y quisiera más información sobre sus plantas.')) ?>" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="gate" style="margin-top: 10px;">
+                    <b>Para ver el contacto necesita estar registrado</b>
+                    <span class="hint">El teléfono y WhatsApp solo se muestran a usuarios registrados. Registrarse es gratis.</span>
+                    <div class="actions"><a href="<?= e(url('registro')) ?>" class="btn pri">Registrarme</a></div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="panel">
@@ -133,32 +150,5 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
         </div>
     <?php endif; ?>
 
-    <div class="panel">
-        <h3 class="vsection-title">📍 Ubicación</h3>
-        <div class="vlocation">
-            <div>
-                <div><b><?= e($vivero['comunidad']) ?>, <?= e($vivero['municipio']) ?></b></div>
-                <div class="coord"><?= e((string) $vivero['lat']) ?>, <?= e((string) $vivero['lng']) ?></div>
-            </div>
-            <a class="btn pri big" href="<?= e($comoLlegar) ?>" target="_blank" rel="noopener">Cómo llegar ↗</a>
-        </div>
-    </div>
-
-    <?php if ($telefonoVisible): ?>
-        <div class="gate">
-            <b>Contacto</b>
-            <span style="font-family: var(--f-mono); user-select: all;"><?= e($vivero['telefono']) ?></span>
-            <div class="actions">
-                <a class="btn wa" href="<?= e(externalUrl('whatsapp') . '52' . $vivero['telefono'] . '?text=' . rawurlencode('Hola, vi el vivero "' . $vivero['nombre'] . '" en la Red de Viveros Tabasco y quisiera más información sobre sus plantas.')) ?>" target="_blank" rel="noopener">Escribir por WhatsApp</a>
-            </div>
-        </div>
-    <?php else: ?>
-        <div class="gate">
-            <b>Para ver el contacto necesita estar registrado</b>
-            <span class="hint">El teléfono y WhatsApp solo se muestran a usuarios registrados. Registrarse es gratis.</span>
-            <div class="actions"><a href="<?= e(url('registro')) ?>" class="btn pri">Registrarme</a></div>
-        </div>
-    <?php endif; ?>
-
-    <p class="hint">Antes de trasladarte, confirma existencias, precios y horario con el responsable.</p>
+    <p class="hint" style="text-align: center;">Antes de trasladarte, confirma existencias, precios y horario con el responsable.</p>
 </div>

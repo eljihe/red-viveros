@@ -139,8 +139,8 @@ legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
 .meta{color:var(--muted);font-size:.9rem}
 
 /* Ficha pública del vivero (ver prototipo.html) */
-.vivero-page{display:flex;flex-direction:column;gap:18px;max-width:900px;margin:0 auto}
-.vhero{position:relative;overflow:hidden;border-radius:16px;background:var(--surface-2);min-height:220px;aspect-ratio:16/8;display:grid;place-items:center}
+.vivero-page{display:flex;flex-direction:column;gap:14px;max-width:1000px;margin:0 auto}
+.vhero{position:relative;overflow:hidden;border-radius:16px;background:var(--surface-2);min-height:160px;aspect-ratio:2.2;display:grid;place-items:center}
 .vhero .photo,.vhero .ph{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:0}
 .vhero .ph{background:var(--surface-2);color:var(--muted);font-size:1rem}
 .vhero:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.58));pointer-events:none}
@@ -148,13 +148,9 @@ legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
 .vgallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .vgallery .vthumb{aspect-ratio:4/3;border-radius:9px;background:var(--surface-2);overflow:hidden}
 .vgallery .vthumb img{width:100%;height:100%;object-fit:cover;display:block}
-.vpage-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.vpage-head h2{font-family:var(--f-display);font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.1;margin:4px 0}
+.vivero-page h2{font-family:var(--f-display);font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.15}
 .vchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
 .vchip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.85rem}
-.vquick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.vquick .panel{align-items:center;text-align:center;padding:12px 8px;gap:2px}
-.vquick strong{font-family:var(--f-display);font-size:1.45rem}
 .vsection-title{font-family:var(--f-display);font-size:1.2rem;margin:0 0 10px}
 .vplant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
 .vplant{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
@@ -166,4 +162,4 @@ legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
 .vservice-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
 .vservice{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;gap:10px;align-items:flex-start}
 .vservice .ico{font-size:1.35rem}
-@media (max-width:480px){.vhero{aspect-ratio:4/3;min-height:190px}.vquick{gap:6px}.vquick .panel{padding:10px 4px}.vquick strong{font-size:1.25rem}.vgallery{gap:6px}}
+@media (max-width:480px){.vhero{aspect-ratio:16/9;min-height:150px}.vgallery{gap:6px}}
