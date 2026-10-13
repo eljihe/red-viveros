@@ -25,7 +25,7 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
     <p><a href="<?= e(url('')) ?>" class="back">← Volver al mapa de viveros</a></p>
 
     <div class="pd">
-        <div>
+        <div class="pd-media">
             <div class="vhero">
                 <?php if (!empty($fotos)): ?>
                     <img class="photo" src="<?= e(url('uploads/viveros/' . basename($fotos[0]))) ?>" alt="Foto de <?= e($vivero['nombre']) ?>">
