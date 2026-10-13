@@ -152,11 +152,6 @@ legend{font-weight:700;font-size:1rem;margin:16px 0 12px 0;padding:0}
 .vchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
 .vchip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:.85rem}
 .vsection-title{font-family:var(--f-display);font-size:1.2rem;margin:0 0 10px}
-.vplant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
-.vplant{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
-.vplant .plant-icon{font-size:1.7rem}
-.vplant b{line-height:1.2}
-.vplant .meta{font-size:.85rem}
 .vlocation-contact{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 @media (max-width:620px){.vlocation-contact{grid-template-columns:1fr}}
 .vlocation{display:flex;gap:12px;align-items:center;flex-wrap:wrap;height:100%}

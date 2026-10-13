@@ -18,8 +18,6 @@ foreach ($productos as $p) {
         break;
     }
 }
-
-$iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
 ?>
 <div class="vivero-page">
     <p><a href="<?= e(url('')) ?>" class="back">← Volver al mapa de viveros</a></p>
@@ -60,26 +58,7 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
         <?php endif; ?>
     </div>
 
-    <!-- 3. Plantas disponibles -->
-    <div class="panel">
-        <h3 class="vsection-title">🌱 Plantas disponibles</h3>
-        <?php if (!empty($vivero['inventario'])): ?>
-            <div class="vplant-grid">
-                <?php foreach ($vivero['inventario'] as $i => $fila): ?>
-                    <div class="vplant">
-                        <span class="plant-icon"><?= $iconosPlantas[$i % count($iconosPlantas)] ?></span>
-                        <b><?= e($fila['especie_nombre']) ?></b>
-                        <span><?= e((string) $fila['cantidad']) ?> plantas</span>
-                        <span class="meta"><?= $fila['edad_meses'] !== null ? 'Edad: ' . e((string) $fila['edad_meses']) . ' meses' : 'Edad no registrada' ?></span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        <?php else: ?>
-            <div class="empty">El vivero aún no registra plantas.</div>
-        <?php endif; ?>
-    </div>
-
-    <!-- 4. Talleres y servicios -->
+    <!-- 3. Talleres y servicios -->
     <?php if (!empty($vivero['servicios'])): ?>
         <div class="panel">
             <h3 class="vsection-title">🧺 Talleres y servicios</h3>
@@ -100,7 +79,7 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
         </div>
     <?php endif; ?>
 
-    <!-- 5. Productos de este vivero -->
+    <!-- 4. Productos de este vivero -->
     <?php if (!empty($productos)): ?>
         <div class="panel">
             <h3 class="vsection-title">🛒 Productos de este vivero</h3>
@@ -127,18 +106,10 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
         </div>
     <?php endif; ?>
 
-    <!-- 6. Ubicación y contacto -->
+    <!-- 5. Contacto y ubicación -->
     <div class="panel">
-        <h3 class="vsection-title">📍 Ubicación y contacto</h3>
+        <h3 class="vsection-title">📍 Contacto y ubicación</h3>
         <div class="vlocation-contact">
-            <div class="vlocation">
-                <div>
-                    <div><b><?= e($vivero['comunidad']) ?>, <?= e($vivero['municipio']) ?></b></div>
-                    <div class="coord"><?= e((string) $vivero['lat']) ?>, <?= e((string) $vivero['lng']) ?></div>
-                </div>
-                <a class="btn pri" href="<?= e($comoLlegar) ?>" target="_blank" rel="noopener">Cómo llegar ↗</a>
-            </div>
-
             <?php if ($telefonoVisible): ?>
                 <div class="gate">
                     <b>Contacto</b>
@@ -154,6 +125,14 @@ $iconosPlantas = ['🌳', '🍫', '🍋', '🌿', '🥭', '🥥'];
                     <div class="actions"><a href="<?= e(url('registro')) ?>" class="btn pri">Registrarme</a></div>
                 </div>
             <?php endif; ?>
+
+            <div class="vlocation">
+                <div>
+                    <div><b><?= e($vivero['comunidad']) ?>, <?= e($vivero['municipio']) ?></b></div>
+                    <div class="coord"><?= e((string) $vivero['lat']) ?>, <?= e((string) $vivero['lng']) ?></div>
+                </div>
+                <a class="btn pri" href="<?= e($comoLlegar) ?>" target="_blank" rel="noopener">Cómo llegar ↗</a>
+            </div>
         </div>
     </div>
 
