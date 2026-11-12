@@ -21,3 +21,6 @@ desktop.ini
 
 # Configuración local de Claude Code
 .claude/settings.local.json
+
+# Referencia de diseño (no se sube, ver CLAUDE.md)
+diseno/

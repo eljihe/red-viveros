@@ -27,12 +27,19 @@ final class MercadoController
             'entrega' => isset($_GET['entrega']),
         ];
 
+        $conteo = [];
+        foreach (Producto::listPublico(['categoria_id' => 0] + $filtros) as $p) {
+            $conteo[(string) $p['categoria']] = ($conteo[(string) $p['categoria']] ?? 0) + 1;
+        }
+
         echo View::render('mercado/index', [
             'productos' => Producto::listPublico($filtros),
             'categorias' => Categoria::listAll(),
             'municipios' => Municipio::listAll(),
             'filtros' => $filtros,
+            'conteoCategorias' => $conteo,
             'activo' => 'mercado',
+            'plantilla' => true,
         ]);
     }
 
@@ -71,6 +78,7 @@ final class MercadoController
             'llegaAZona' => $llegaAZona,
             'contacto' => $this->resolverContacto($id),
             'activo' => 'mercado',
+            'plantilla' => true,
         ]);
     }
 

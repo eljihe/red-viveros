@@ -19,6 +19,23 @@ final class InicioController
 {
     public function index(): void
     {
+        $archivos = glob(path('slider') . '/*.{png,jpg,jpeg,webp}', GLOB_BRACE) ?: [];
+        sort($archivos);
+        $fotos = array_map(
+            static fn (string $archivo): string => url('assets/plugins/parallax-slider/img/public/' . basename($archivo)),
+            $archivos
+        );
+
+        echo View::render('inicio/index', [
+            'productos' => array_slice(Producto::listPublico(), 0, 4),
+            'fotosPortada' => $fotos,
+            'activo' => 'inicio',
+            'plantilla' => true,
+        ]);
+    }
+
+    public function mapa(): void
+    {
         try {
             Database::connection();
             $municipios = Municipio::listAll();
@@ -32,12 +49,13 @@ final class InicioController
             $error = $exception->getMessage();
         }
 
-        echo View::render('inicio/index', [
+        echo View::render('inicio/mapa', [
             'municipios' => $municipios,
             'especies' => $especies,
             'viveros' => $viveros,
             'error' => $error,
-            'activo' => 'mapa',
+            'activo' => 'viveros',
+            'plantilla' => true,
         ]);
     }
 
@@ -54,7 +72,8 @@ final class InicioController
             'vivero' => $vivero,
             'productos' => Producto::listPublico(['vivero_id' => $id]),
             'telefonoVisible' => Auth::estaAutenticado(),
-            'activo' => 'mapa',
+            'activo' => 'viveros',
+            'plantilla' => true,
         ]);
     }
 }

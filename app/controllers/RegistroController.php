@@ -25,7 +25,7 @@ final class RegistroController
         if (Auth::estaAutenticado()) {
             redirect('cuenta');
         }
-        echo View::render('registro/elegir-tipo', ['activo' => 'registro']);
+        echo View::render('registro/elegir-tipo', ['activo' => 'registro', 'plantilla' => true]);
     }
 
     public function mostrarComprador(): void
@@ -48,6 +48,7 @@ final class RegistroController
             'tipo' => $flash['tipo'],
             'formData' => $formData,
             'activo' => 'registro',
+            'plantilla' => true,
         ]);
     }
 
@@ -219,6 +220,7 @@ final class RegistroController
             'tipo' => $flash['tipo'],
             'formData' => $formData,
             'activo' => 'registro',
+            'plantilla' => true,
         ]);
     }
 

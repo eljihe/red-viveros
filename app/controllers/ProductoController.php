@@ -59,6 +59,7 @@ final class ProductoController
             'mensaje' => $flash['mensaje'],
             'tipo' => $flash['tipo'],
             'activo' => 'cuenta',
+            'plantilla' => true,
         ]);
     }
 

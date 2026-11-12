@@ -49,6 +49,7 @@ final class ViveroController
             'mensaje' => $flash['mensaje'],
             'tipo' => $flash['tipo'],
             'activo' => 'panel',
+            'plantilla' => true,
         ]);
     }
 

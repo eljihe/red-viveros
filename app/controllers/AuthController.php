@@ -104,6 +104,7 @@ final class AuthController
         echo View::render('cuenta/olvide-pin', [
             'enlaceWhatsApp' => $enlaceWhatsApp,
             'activo' => 'cuenta',
+            'plantilla' => true,
         ]);
     }
 }

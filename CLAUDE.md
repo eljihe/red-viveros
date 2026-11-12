@@ -36,7 +36,7 @@ Los usuarios son campesinos con celulares básicos y poca señal: todo debe ser 
   - **Credenciales en configuración**: se leen de `config/config.php`, nunca hardcodeadas
   - **Manejo de errores**: captura `PDOException` y lanza `DatabaseException` personalizada
   - **Atributos PDO seguros**: `ATTR_ERRMODE=EXCEPTION`, `EMULATE_PREPARES=false`, `STRINGIFY_FETCHES=false`
-- **Frontend: HTML5 + CSS propio + JavaScript sin framework.** Alpine.js permitido solo si simplifica formularios dinámicos. No usar React, Vue, Bootstrap ni Tailwind.
+- **Frontend: HTML5 + CSS propio + JavaScript sin framework.** Alpine.js permitido solo si simplifica formularios dinámicos. No usar React, Vue ni Tailwind. **Excepción (decidida por el usuario):** el diseño usa el CSS del template Unify (Bootstrap 3, tema `default` verde) copiado en `public/assets/`, con sus clases tal cual (`row`, `col-md-*`, `breadcrumbs`, `btn-u`…). Solo CSS: **sin jQuery ni Bootstrap JS**; menú y carrusel con JS propio (`public/js/menu.js`, `carrusel.js`). La referencia de diseño está en `diseno/` (no se sube). Las páginas se migran una por una; las vistas migradas devuelven `'plantilla' => true` al layout, las demás quedan dentro de un `.container` (`.contenido-legacy`). Modo oscuro desactivado hasta tematizar el template.
 - Tokens **CSRF** en todos los formularios `POST`. Escapar toda salida con `htmlspecialchars`.
 - **Fotos**: validar tipo real (finfo), máximo 5 MB, redimensionar a 1200 px de lado mayor y guardar como JPEG/WebP con nombre aleatorio en `public/uploads/viveros/` o `public/uploads/productos/`. En la base solo se guarda el nombre del archivo.
 - Más adelante: PWA (manifest + service worker) para instalar en el celular.

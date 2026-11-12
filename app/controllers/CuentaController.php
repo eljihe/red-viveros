@@ -31,6 +31,7 @@ final class CuentaController
                 'mensaje' => $mensaje,
                 'tipo' => $tipo,
                 'activo' => 'cuenta',
+                'plantilla' => true,
             ]);
             return;
         }
@@ -70,6 +71,7 @@ final class CuentaController
             'mensaje' => $mensaje,
             'tipo' => $tipo,
             'activo' => 'cuenta',
+            'plantilla' => true,
         ]);
     }
 
@@ -81,6 +83,7 @@ final class CuentaController
             'mensaje' => $flash['mensaje'],
             'tipo' => $flash['tipo'],
             'activo' => 'cuenta',
+            'plantilla' => true,
         ]);
     }
 

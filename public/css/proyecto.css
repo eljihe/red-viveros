@@ -1,0 +1,131 @@
+/* Ajustes del proyecto sobre el template (Unify). Solo lo que el template no trae. */
+
+/* Páginas aún no migradas al template: contenedor con aire arriba y abajo */
+.contenido-legacy{padding-block:24px 48px}
+
+/* Logo y nombre dentro de .navbar-brand */
+.header .navbar-brand{display:flex;align-items:center;gap:10px;height:auto}
+.navbar-brand .logo-vivero{height:72px;width:auto;flex:none}
+
+/* Botón "Cerrar sesión" dentro de la barra superior (mismo aspecto que los enlaces) */
+.top ul.loginbar .loginbar-form{display:inline;margin:0}
+.top ul.loginbar .loginbar-form button{background:none;border:0;padding:0;color:#7c8082;font-size:11px;text-transform:uppercase;font-family:'Open Sans',sans-serif;cursor:pointer}
+.top ul.loginbar .loginbar-form button:hover{color:#72c02c}
+
+/* Menú plegable en celular (Bootstrap lo controlaba con su JS) */
+@media (max-width:767px){.navbar-collapse.collapse.in{display:block!important}}
+
+/* ===== Mercado: lo que el template resolvía con JavaScript (mixitup / bxslider) ===== */
+.sorting-block .sorting-nav li a{color:inherit;display:inline-block}
+.sorting-block .sorting-nav li a:hover{color:#72c02c;text-decoration:none}
+.sorting-block .sorting-nav li.active a{color:#72c02c}
+.sorting-block .sorting-grid{display:flex;flex-wrap:wrap}
+.sorting-block .sorting-grid li{margin-bottom:30px}
+.sorting-block .sorting-grid li img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.sin-foto{display:block;width:100%;aspect-ratio:4/3;background:#f2f2f2;color:#999;text-align:center;line-height:1;padding-top:calc(50% * .75 - .5em)}
+.recent-work{display:flex;flex-wrap:wrap}
+.recent-work li{list-style:none}
+.recent-work a{display:block}
+.recent-work img{width:100%;aspect-ratio:4/3;object-fit:cover}
+
+/* Ficha de producto */
+.telefono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;user-select:all}
+.btn-u.btn-whatsapp{background:#1f8f4e}
+.btn-u.btn-whatsapp:hover{background:#17703d}
+.carousel-v1 .carousel-inner .item img{width:100%;aspect-ratio:652/412;object-fit:cover}
+
+/* Bootstrap 3 deja html en 62.5% (1rem = 10px); las páginas del proyecto usan rem sobre 16px */
+html{font-size:100%}
+
+/* ===== Mapa (portada estilo "Home Magazine") ===== */
+.mapa-caja{border:1px solid #eee;background:#fcfcfc}
+.mapa-caja .mapa-pie{padding:8px 15px;background:rgba(0,0,0,.7)}
+.mapa-caja .mapa-pie p{margin:0;color:#fff;font-size:13px}
+.search-blocks .search-img img{width:100%;aspect-ratio:4/3;object-fit:cover;margin:5px 0 10px}
+.search-blocks .search-img .sin-foto{margin:5px 0 10px}
+#resultado-filtro{margin-bottom:15px}
+#mapa-publico{width:100%}
+
+/* Paneles de Bootstrap (.panel-green, etc.) dentro de páginas migradas: anulan la tarjeta .panel del proyecto */
+.panel[class*="panel-"]{display:block;gap:0;padding:0;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.05)}
+.panel.panel-green{border-color:#2ecc71}
+.panel.panel-blue{border-color:#3498db}
+.panel > .panel-body label{font-weight:600;color:#555}
+.panel > .panel-body .checkbox label{font-weight:400}
+
+/* El estilo global de inputs del proyecto (width:100%) no debe aplicar a casillas y radios */
+input[type="checkbox"],input[type="radio"]{width:auto}
+
+/* Botón "Quitar" dentro de tablas */
+.form-inline-tabla{display:inline;margin:0}
+.table td{vertical-align:middle}
+
+/* Cuenta: botón "Cerrar sesión" dentro del menú lateral y miniaturas en tablas */
+.sidebar-nav-v1 .form-menu{margin:0}
+.sidebar-nav-v1 .form-menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:10px;color:#555;font:inherit;cursor:pointer}
+.sidebar-nav-v1 .form-menu button:hover{color:#72c02c}
+.table .col-foto{width:70px}
+.table .col-foto img,.table .sin-foto-mini{display:block;width:56px;height:56px;object-fit:cover;background:#f2f2f2}
+
+/* ===== Lista de viveros del mapa: cajas tag-box-v2 (texto) ===== */
+.vivero-total{display:inline-block;margin-left:6px;padding:1px 9px;font-size:13px;vertical-align:middle;color:#fff;background:#72c02c;border-radius:10px!important}
+.vivero-box{margin-bottom:20px}
+.vivero-box h2{margin:0 0 6px}
+.vivero-box h2 a{color:#555}
+.vivero-box h2 a:hover{color:#72c02c;text-decoration:none}
+.vivero-box .vivero-datos{margin:0 0 6px;font-size:13px;color:#777}
+
+/* ===== Página de inicio: solo lo que el template no trae ===== */
+/* Tarjetas de producto: todas del mismo alto */
+.inicio-productos{display:flex;flex-wrap:wrap}
+.inicio-producto{display:flex;margin-bottom:20px}
+.inicio-producto[hidden]{display:none}
+.inicio-producto .thumbnail-style{display:flex;flex-direction:column;width:100%;margin-bottom:0}
+.inicio-producto .thumbnail-img img,.inicio-producto .sin-foto{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.inicio-producto .caption{flex:1}
+.inicio-tabs a{cursor:pointer}
+.slider-inner .da-slider{box-shadow:none;border-bottom:2px solid #ddd}
+.da-slide .da-img img{max-width:100%;max-height:328px;width:auto;height:auto;vertical-align:middle;border-radius:4px}
+.da-slide .da-link{top:360px;color:#fff;text-shadow:none;font-size:18px;text-decoration:none}
+@media (max-width:767px){.da-slide .da-img{display:none}.da-slide h2 i{font-size:22px}.da-slide h2{line-height:36px;top:60px}.da-slide p{font-size:14px;top:240px}.da-slide .da-link{top:330px;font-size:15px}}
+.title-box .title-box-text{font-size:44px;line-height:52px}
+.title-box p{font-size:19px;line-height:30px}
+@media (max-width:767px){.title-box .title-box-text{font-size:30px;line-height:38px}.title-box p{font-size:16px;line-height:26px}}
+
+/* ===== Mercado: página más ancha, 5 productos por fila y categorías a la derecha ===== */
+.mercado-ancho{width:auto;max-width:1600px}
+@media (min-width:768px){.sorting-block .sorting-grid>li{width:50%}}
+@media (min-width:992px){.sorting-block .sorting-grid>li{width:33.3333%}}
+@media (min-width:1200px){.sorting-block .sorting-grid>li{width:20%}}
+.mercado-categorias{margin-bottom:30px}
+.mercado-categorias .list-group-item a{display:block;color:#555}
+.mercado-categorias .list-group-item.active{background:#72c02c;border-color:#72c02c}
+.mercado-categorias .list-group-item.active a{color:#fff}
+.btn-u.btn-block+.btn-u.btn-block{margin-top:8px}
+.btn-u.btn-limpiar{background:#bbb;text-align:center}.btn-u.btn-limpiar:hover{background:#999}
+.registro-aviso{font-size:18px;line-height:28px}
+
+/* Header: logo a la izquierda, menú centrado (el logo es alto y el menú se centra verticalmente) */
+@media (min-width:768px){
+  .header .navbar>.container{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+  .header .navbar>.container:before,.header .navbar>.container:after{display:none}
+  .header .navbar-header{float:none;justify-self:start;margin:0}
+  .header .navbar-collapse{float:none;padding:0}
+  .header .navbar-collapse .navbar-nav{float:none;margin:0;display:flex;justify-content:center}
+  .header .navbar-brand{padding:6px 10px 6px 0}
+  .header .navbar-default .navbar-nav>li>a{font-size:17px}
+}
+@media (max-width:767px){.navbar-brand .logo-vivero{height:56px}}
+.mapa-completo{border-left:0;border-right:0;margin-top:10px;margin-bottom:0}
+#mapa-publico{height:520px}
+@media (max-width:767px){#mapa-publico{height:380px}}
+
+/* Lista de viveros: boxes "servive-block-in" del template, todos del mismo alto */
+.lista-viveros{display:flex;flex-wrap:wrap}
+.lista-viveros:before,.lista-viveros:after{display:none}
+.vivero-col{display:flex}
+.vivero-col .servive-block-in{display:flex;flex-direction:column;align-items:center;width:100%}
+.vivero-col .servive-block-in h4 a{color:inherit}
+.vivero-col .servive-block-in .vivero-info{flex:1;margin:12px 0 15px;font-size:14px}
+.vivero-col .servive-block-in .vivero-info li{margin-bottom:4px}
+.vivero-col .servive-block-in .vivero-info i{font-size:14px;color:#72c02c}

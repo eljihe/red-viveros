@@ -24,6 +24,15 @@ function url(string $path = ''): string
     return $base . $normalized;
 }
 
+/** URL de un archivo de public/ con la fecha de modificación, para que el navegador no use una copia vieja. */
+function assetUrl(string $path): string
+{
+    $file = path('public') . '/' . ltrim($path, '/');
+    $version = is_file($file) ? (string) filemtime($file) : '0';
+
+    return url($path) . '?v=' . $version;
+}
+
 function redirect(string $path): never
 {
     header('Location: ' . url($path));

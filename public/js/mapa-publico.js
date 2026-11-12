@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const filtroMunicipio = document.getElementById('filtro-municipio');
     const listaElement = document.getElementById('lista-viveros');
     const resultadoElement = document.getElementById('resultado-filtro');
+    const totalElement = document.getElementById('total-viveros');
 
     function escapeHtml(valor) {
         const div = document.createElement('div');
@@ -76,6 +77,40 @@ document.addEventListener('DOMContentLoaded', function () {
         return true;
     }
 
+    function resumenHistoria(texto) {
+        const limpio = (texto || '').trim();
+        return limpio.length > 160 ? limpio.slice(0, 157).trim() + '...' : limpio;
+    }
+
+    // Los textos suelen capturarse en MAYÚSCULAS: se muestran en formato normal.
+    const PALABRAS_MENORES = ['de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'en', 'con', 'por', 'para', 'un', 'una', 'a'];
+
+    function esTodoMayusculas(texto) {
+        return texto !== '' && texto === texto.toUpperCase() && texto !== texto.toLowerCase();
+    }
+
+    function nombreLegible(nombre) {
+        const texto = String(nombre || '').trim();
+        if (!esTodoMayusculas(texto)) {
+            return texto;
+        }
+        return texto.toLowerCase().split(/\s+/).map(function (palabra, i) {
+            if (i > 0 && PALABRAS_MENORES.indexOf(palabra) !== -1) {
+                return palabra;
+            }
+            return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+        }).join(' ');
+    }
+
+    function textoLegible(texto) {
+        const limpio = String(texto || '').trim();
+        if (!esTodoMayusculas(limpio)) {
+            return limpio;
+        }
+        const minusculas = limpio.toLowerCase();
+        return minusculas.charAt(0).toUpperCase() + minusculas.slice(1);
+    }
+
     function renderizarLista() {
         if (!listaElement) {
             return;
@@ -83,15 +118,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const visibles = viveros.filter(coincide);
 
+        if (totalElement) {
+            totalElement.textContent = visibles.length;
+        }
+
         listaElement.innerHTML = visibles.length
             ? visibles.map(function (vivero) {
-                return '<a class="vitem" href="' + escapeHtml(vivero.url) + '">'
-                    + '<span class="nm">' + escapeHtml(vivero.nombre) + '</span>'
-                    + '<span class="cm">' + escapeHtml(vivero.comunidad) + ', ' + escapeHtml(vivero.municipio) + '</span>'
-                    + '<span class="pl">' + totalPlantas(vivero) + '</span>'
-                    + '</a>';
+                const url = escapeHtml(vivero.url);
+                const nombre = escapeHtml(nombreLegible(vivero.nombre));
+                const integrantes = vivero.integrantes
+                    ? '<li><i class="icon-group color-green"></i> ' + escapeHtml(vivero.integrantes) + ' integrantes</li>'
+                    : '';
+
+                return '<div class="col-md-3 col-sm-6 vivero-col">'
+                    + '<div class="servive-block-in vivero-box-info">'
+                    + '<h4><a href="' + url + '">' + nombre + '</a></h4>'
+                    + '<div><i class="icon-leaf"></i></div>'
+                    + '<ul class="list-unstyled vivero-info">'
+                    + '<li><i class="icon-map-marker color-green"></i> ' + escapeHtml(vivero.comunidad) + ', ' + escapeHtml(vivero.municipio) + '</li>'
+                    + '<li><i class="icon-leaf color-green"></i> ' + totalPlantas(vivero) + ' plantas</li>'
+                    + integrantes
+                    + '</ul>'
+                    + '<a class="btn-u btn-u-sm" href="' + url + '">Leer más</a>'
+                    + '</div></div>';
             }).join('')
-            : '<p class="empty">Ningún vivero coincide con el filtro.</p>';
+            : '<div class="col-xs-12"><p class="text-center">Ningún vivero coincide con el filtro.</p></div>';
     }
 
     function actualizarMarcadores() {

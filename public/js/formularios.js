@@ -12,7 +12,8 @@ function usarMiUbicacion(button) {
         function(position) {
             const lat = position.coords.latitude.toFixed(4);
             const lng = position.coords.longitude.toFixed(4);
-            const input = button.parentElement.querySelector('[data-gps-target]')
+            const contenedor = button.closest('.form-group') || button.parentElement;
+            const input = contenedor.querySelector('[data-gps-target]')
                 || document.getElementById('coordenadas-input');
 
             if (input) {
